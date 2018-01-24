@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#  django-admin startproject xxx ( such as start)
+#  python manage.py startapp xxx
+#  To create new app ( such polls ) in your project
 import os
 import sys
 
