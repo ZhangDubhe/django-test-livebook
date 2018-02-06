@@ -1,0 +1,31 @@
+{% extends "../base_site.html" %}
+{% block content%}
+
+    <div class="col-md-12 col-xs-12 ">
+        {% for disease in diseases %}
+            <div class="mb-3 ">
+                {% if random_number <= 1   %}
+                    <h2>What Symptoms does {{ disease }} have? </h2>
+                {% elif random_number <= 2 %}
+                    <h2>If someone have {{ disease }} , <b>WHERE</b> will you do some examination?  </h2>
+                {% elif random_number <= 3 %}
+                    <h2> If someone have {{ disease }}, what <b>operation</b> will you do in the lab for him to exam? </h2>
+                {% endif %}
+
+                <div class="dropdown">
+                    <input type="text"  />
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="selectSymptoms" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select it~
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="selectSymptoms">
+                        {% for symptom in symptoms %}
+                            <button class="dropdown-item" type="button" id="s_{{ symptom.id }}">{{ symptom.symptom_name }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+<title>{% block title %}{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+{% block extrastyle %}{% endblock %}
+
+{% block extrahead %}{% endblock %}
+
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+</head>
+
+<body class="{% block bodyclass %}{% endblock %}">
+
+<!-- Container -->
+<div id="container">
+    <div id="header" class="navbar navbar-default navbar-fixed-top navbar-light bg-light">
+        {% block branding %}
+            <a id="site-name" class="navbar-brand">Data For Livebook Demo</a>
+        {% endblock %}
+        {% block nav %}{% endblock %}
+    </div>
+
+    <!-- Content -->
+    <div id="content"  class="container px-2">
+        {% block pretitle %}{% endblock %}
+
+        <div class="card mt-3 mb-3 " style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{% block content_title %}{% if title %}{{ title }}{% endif %}{% endblock %}</h5>
+                <p class="card-text">{% block preview %} {{ preview }}{% endblock %}</p>
+            </div>
+        </div>
+
+
+        <div class="row">
+            {% block content %}
+                {{ content }}
+            {% endblock %}
+        </div>
+
+        {% block sidebar %}{% endblock %}
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+
+    <div id="footer" class="footer fixed-bottom">
+        {% block footer %}{% endblock %}
+    </div>
+</div>
+<!-- END Container -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

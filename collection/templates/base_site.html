@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Data For Livebook Demo') }}{% endblock %}
+
+{% block nav %}
+    <nav class="navbar">
+      <a class="nav-link" href="/home">Home</a>
+      <a class="nav-link" href="/polls">Polls</a>
+      <a class="nav-link" href="/quiz">Quiz</a>
+      <a class="nav-link" href="{% url 'admin:index' %}">admin</a>
+    </nav>
+{% endblock %}
+
+{% block footer %}
+    <a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a>
+{% endblock %}
