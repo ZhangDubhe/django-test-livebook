@@ -8,7 +8,7 @@ To develop a special-purpose case-authoring environment, to enable the collectio
 
 #### Webpage structure
 Page
-
+    
     Welcome page : describe this project information
     Poll page
     Quiz page
@@ -20,12 +20,12 @@ Banner Nav
     Quiz
     Own
     Admin ( only admin user when log in)
-  
+    
 User
-
+    
     Login - if not admin, if student , then quiz page
-			Not student, then poll page
-	admin , then admin page, but also get in other page in 
+            Not student, then poll page
+    admin , then admin page, but also get in other page in 
 
 
 
@@ -62,15 +62,75 @@ The objective is to crowdsource the data-collection around diseases and their sy
 
 #### UMLS Database
 
-  1.Download UMLS database from where it release in official website. 
-  > Each UMLS release includes MetamorphoSys, required to install Knowledge Sources files, and to create, search and browse customized Metathesaurus subsets. MetamorphoSys requires a minimum of 30 GB of free hard disk and takes 2-10 hours to run on a range of platforms tested. The actual time will depend on your configuration, hardware and operating system platforms.
-  [UMLS release](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)
-  
-  2.Install UMLS to Rich Text Format or Mysql whatever you like.
-  > TIPs: If you want to transfer the data to Mysql or Other software, it's necessary to have enough space for it.
-  
-  3.Load UMLS into Mysql. I only want to use the word list of diseases and symptoms, so I try to find this two, but the structure look so confuse.
+1.Download UMLS database from where it release in official website. 
+> Each UMLS release includes MetamorphoSys, required to install Knowledge Sources files, and to create, search and browse customized Metathesaurus subsets. MetamorphoSys requires a minimum of 30 GB of free hard disk and takes 2-10 hours to run on a range of platforms tested. The actual time will depend on your configuration, hardware and operating system platforms.
+[UMLS release](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)
+
+2.Install UMLS to Rich Text Format or Mysql whatever you like.
+> TIPs: If you want to transfer the data to Mysql or Other software, it's necessary to have enough space for it.
+
+3.Load UMLS into Mysql. I only want to use the word list of diseases and symptoms, so I try to find this two, but the structure look so confuse.
+
+Here is the link of [Loading UMLS into MYSQL](http://groups.csail.mit.edu/medg/projects/text/Load_UMLS_mysql.html)
+
+
+#### Using UMLS-API 
+
+##### 1. Authenticating and calling
     
-   Here is the link of [Loading UMLS into MYSQL](http://groups.csail.mit.edu/medg/projects/text/Load_UMLS_mysql.html)
+3 steps
+
+1.Generate TGT ( valid 8 hours)
+    
+    https://utslogin.nlm.nih.gov/cas/v1/api-key
+    Body:
+    apikey: <your apikey>
+     
+    Response:
+    HTTP/1.1 201 Created
+    Server: Apache-Coyote/1.1
+    Cache-Control: no-store
+    Location: https://utslogin.nlm.nih.gov/cas/v1/api-key/TGT-58510-CJztXeHbYL4U4LcURLx4KJoFFRgigPN7tLEkH7vse1imydsvdM-cas
+    Content-Type: text/html;charset=UTF-8
+
+2.Generate ST  ( valid 5 mins but single use)
+
+    https://utslogin.nlm.nih.gov/cas/v1/tickets/<TGT-....>
+    Body:
+    service:http://umlsks.nlm.nih.gov
+    
+    Response:
+    ST-503827-rvULlxP4kEDPcq1ED2Ap-cas
+    
+    HTTP/1.1 200 OK
    
-   
+3.API call                     
+example
+    
+    Get:
+    https://uts-ws.nlm.nih.gov
+    /rest/content/current/CUI/C0018787
+    ?ticket=ST-503827-rvULlxP4kEDPcq1ED2Ap-cas
+
+if invalid:
+       
+      HTTP/1.1 403 Forbidden
+       A new service ticket must be generated for each request to the API.                      
+
+
+## DevLog:
+##### 2018/2/7 1518059603.698126
+Hardly believe Eleni ask me to have a meeting with her today. While my webapp still in a beginning process.
+Django seems like very easy, but when you have many problem in fundation knowledge, it seems like very hard.
+完成UMLS的API对接，一开始的思路不清晰浪费了很多时间，认证接口看似很简单的我花了很长时间。
+目前 认证接口包括后台长时间保存的tgt数据（create Ticket-grant ticket 并存储 ） + 前端API调用过程（cookie获取tgt + tgt获取service ticket， 由于st只是单次使用）
+即：
+    back —— - query auth 
+            - - is_exist(tgt) - response tgt and st
+            - - is_not_exist or is_not_valid - post tgt + save
+            - - ------------------------------ response tgt and st
+    front—— - query 'search'
+            - - - check cookie 
+            - - - - isset - post st - get 'search'
+            - - - - not - - query auth
+    tgt in cookie has an expiration - 8 * 60 * 60 * 1000 (js - ms)
