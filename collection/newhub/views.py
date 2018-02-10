@@ -36,7 +36,7 @@ def quiz(request):
         'title': 'Quiz',
         'diseases': diseases,
         'symptoms': symptoms,
-        'random_number': random_number,
+        'random_number': random_number
     })
 
 def current_datetime(request):

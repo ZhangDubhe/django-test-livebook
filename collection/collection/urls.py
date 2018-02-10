@@ -16,9 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 urlpatterns = [
-    path('', include('newhub.urls'), name="hub"),
-    path('oldhub/', include('oldhub.urls'), name="old"),
-    path('home/', include('home.urls'), name="home"),
+
+    path('', include('demo.urls'), name="home"),
     path('admin/', admin.site.urls)
 ]
 

@@ -120,7 +120,7 @@ if invalid:
 
 ## DevLog:
 ##### 2018/2/7 1518059603.698126
-Hardly believe Eleni ask me to have a meeting with her today. While my webapp still in a beginning process.
+Hardly believe Eleni ask me to have a meeting with her today. While my webapp still in a begin    ning process.
 Django seems like very easy, but when you have many problem in fundation knowledge, it seems like very hard.
 完成UMLS的API对接，一开始的思路不清晰浪费了很多时间，认证接口看似很简单的我花了很长时间。
 目前 认证接口包括后台长时间保存的tgt数据（create Ticket-grant ticket 并存储 ） + 前端API调用过程（cookie获取tgt + tgt获取service ticket， 由于st只是单次使用）
@@ -134,3 +134,5 @@ Django seems like very easy, but when you have many problem in fundation knowled
             - - - - isset - post st - get 'search'
             - - - - not - - query auth
     tgt in cookie has an expiration - 8 * 60 * 60 * 1000 (js - ms)
+
+

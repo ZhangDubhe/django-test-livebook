@@ -1,23 +1,25 @@
 {% extends "../base_site.html" %}
+{% load i18n static %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
 
 {% block content %}
+
     {% block object-tools %}{% endblock %}
     <div class="col-xs-12 col-sm-12 mb-4">
+        <h5>{% trans "Hello"  %},{% blocktrans %}{{  username  }}!{% endblocktrans %}</h5>
         <h5>{{ content }}</h5>
     </div>
     <br/>
     <div class="col-xs-12 col-sm-12 mb-4">
-        <input type="text" method="get" id="input-disease" />
-        <button class="btn btn-dark" > Search </button>
-
+        <button class="btn btn-dark" onclick="start()" > start </button>
     </div>
     <div class="col-xs-12 col-sm-12 mb-4">
-        <p>You might want to search the term below?</p>
+        <p>{{ para }}</p>
         <p class="" id="api-response">
             {{ response }}
         </p>
+        <p>may the force be with you.</p>
     </div>
-
 
 {% endblock %}
 

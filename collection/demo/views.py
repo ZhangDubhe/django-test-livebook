@@ -6,9 +6,10 @@ from django.utils.translation import gettext as _
 from io import BytesIO
 from reportlab.pdfgen import canvas
 import json
+import random
 
-from .models import UMLS_tgt, UMLS_st
-from .models import Diseases, Symptom, DiseaseLink
+
+from .models import Disease, Symptom, DiseaseLink,UMLS_tgt, UMLS_st
 from  .Authentication import Authentication as auth
 
 USERNAME = "Dubhe"
@@ -23,27 +24,29 @@ def index(request):
         'para':para
     })
 
+def get_random(model, number):
+    last = model.objects.count() - 1
 
 def quiz(request, disease_id):
     try:
-        disease = Diseases.objects.get(pk=disease_id)
+        disease = Disease.objects.get(pk=disease_id)
     except:
         disease = "Dysentery"
-    content = "Q: What symptoms does * "+ disease.disease_name +" * have? "
+    content = "Q: What symptoms does \" "+ disease.name +" \" have? "
     para = "You might want to search the term below?"
     user_name = _(USERNAME)
-    # try:
-    #     symptoms = Symptom.objects.all()
-    # except Symptom.DoesNotExist:
-    #     raise Http404("Symptoms do not exist")
+    try:
+        symptoms = Symptom.objects.order_by('?')[0:5]
+    except Symptom.DoesNotExist:
+        raise Http404("Symptoms do not exist")
 
     return render(request, 'quiz/index.html', {
         'content': content,
         'title': 'Home',
         'username': user_name,
         'para':para,
-        'disease':disease
-        # 'symptoms': symptoms,
+        'disease':disease,
+        'symptoms': symptoms,
     })
 
 
@@ -58,7 +61,7 @@ def update_disease(request):
         name = request.POST.get('name')
         cuid = request.POST.get('cui')
         try:
-            Diseases.objects.create(name=name,content_unique_id=cuid)
+            Disease.objects.create(name=name,content_unique_id=cuid)
             result = "UPDATE Disease success"
             status = 20
         except :
@@ -107,9 +110,15 @@ def umls_auth(request):
         name = request.POST.get('name')
         status = 0
         if name:
-            tgt_res = UMLS_tgt.objects.order_by('-add_at')[0]
-            if is_tgt_valid(tgt_res):
-                pass
+            try:
+                tgt_res = UMLS_tgt.objects.order_by('-add_at')[0]
+            except:
+                tgt_res = None
+            if tgt_res != None:
+                if is_tgt_valid(tgt_res):
+                    pass
+                else:
+                    tgt_res = create_new_tgt()
             else:
                 tgt_res = create_new_tgt()
             st = create_new_st(tgt_res)
