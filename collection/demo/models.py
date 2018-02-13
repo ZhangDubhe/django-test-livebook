@@ -22,6 +22,7 @@ class UMLS_st(models.Model):
 class Disease(models.Model):
     content_unique_id = models.CharField(max_length=8, null=True)
     name = models.TextField()
+    concept_type = models.CharField(max_length=150,null=True, default="Null")
     def __str__(self):
         return self.name
 

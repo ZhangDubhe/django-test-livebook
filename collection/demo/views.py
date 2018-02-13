@@ -27,11 +27,30 @@ def index(request):
 def get_random(model, number):
     last = model.objects.count() - 1
 
-def quiz(request, disease_id):
+
+def user_auth(uuid):
+    if uuid:
+        return True
+    else:
+        return False
+
+def quiz(request, uuid):
+    # check uuid
+    if user_auth(uuid) == False:
+        return render(request, 'quiz/index.html', {
+        'content': "No this user",
+        'title': 'Auth Error',
+        'username': "no auth"
+    })
+
     try:
-        disease = Disease.objects.get(pk=disease_id)
+        diseases = Disease.objects.filter(concept_type = 'Otitis').order_by('?')
+        length = diseases.count()
+
     except:
-        disease = "Dysentery"
+        diseases = ["Otitis"]
+
+    disease = diseases[0]
     content = "Q: What symptoms does \" "+ disease.name +" \" have? "
     para = "You might want to search the term below?"
     user_name = _(USERNAME)
@@ -47,6 +66,7 @@ def quiz(request, disease_id):
         'para':para,
         'disease':disease,
         'symptoms': symptoms,
+        'tgt':UMLS_tgt.objects.order_by('-add_at')[0]
     })
 
 
@@ -131,8 +151,7 @@ def umls_auth(request):
         return HttpResponse(json.dumps({
             "status": status,
             "result": result,
-            "tgt": str(tgt_res),
-            "tgt_exp": UMLS_tgt.objects.order_by('-add_at')[0].add_at.timestamp() + 28800
+            "tgt": str(tgt_res)
         }))
 
 def is_tgt_valid(tgt):

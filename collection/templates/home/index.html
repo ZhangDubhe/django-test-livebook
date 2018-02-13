@@ -1,6 +1,6 @@
 {% extends "../base_site.html" %}
 {% load i18n static %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "home/css/home.css" %}" />{% endblock %}
 
 {% block content %}
 
@@ -23,3 +23,10 @@
 
 {% endblock %}
 
+{% block extrascript %}
+    <script src="{% static "home/js/home.js" %}">
+    </script>
+    <script src="{% static "home/js/load.js" %}">
+    </script>
+
+{% endblock %}

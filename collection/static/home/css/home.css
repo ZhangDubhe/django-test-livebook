@@ -1,0 +1,8 @@
+.card-body{
+    border:1px solid #5d5d5d;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: #fafafa;
+    box-shadow: #959595 1px 1px 1px;
+}

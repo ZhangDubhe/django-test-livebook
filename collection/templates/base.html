@@ -29,17 +29,9 @@
     <div id="content"  class="container px-2">
         {% block pretitle %}{% endblock %}
 
-        <div class="mt-3 mb-2 " style="width: 18rem;">
-            <div class="card-body">
-                <h4 class="card-title">{% block content_title %}{% if title %}{{ title }}{% endif %}{% endblock %}</h4>
-                <p class="card-text">{% trans "hello"  %},{% blocktrans %}{{  username  }}!{% endblocktrans %}</p>
-                <p class="card-text">{% block preview %} {{ preview }}{% endblock %}</p>
-
-            </div>
-        </div>
 
 
-        <div class="row">
+        <div class="row mt-4 mb-2">
             {% block content %}
                 {{ content }}
             {% endblock %}
@@ -66,127 +58,8 @@
 status = 0;
 serviceTicket = "";
 session = sessionStorage;
-function get_api_from_UMLS(){
-    $.post(
-        "{% url 'umls_auth' %}",
-        {
-            name:"Auth",
-            csrfmiddlewaretoken:'{{ csrf_token }}'
-        },
-        function (data) {
-            data = JSON.parse(data);
-            var result = data["result"];
-            if (data["status"] === 200) {
-                var serviceTicket = result;
-                setCookies('tgt',data["tgt"],data["tgt_exp"]*1000);
-                session.setItem('tgt',data["tgt"]);
-                status = 200;
-                return serviceTicket;
-            }
-            else {
-                $("#api-response").html(data.result);
-            }
-        }
-    );
-}
-
-function get_st_from_UMLS(tgt) {
-    params = {'service': "http://umlsks.nlm.nih.gov"}
-    $.ajax({
-        url:tgt,
-        data:params,
-        type:"post",
-        async:false,
-        success:function (data) {
-            console.log("res:",data);
-            status = 200;
-            serviceTicket = data;
-            return serviceTicket
-    }});
-}
-
-function next_question(type,number){
-    var url_list = location.href.split("/");
-    var question_type = url_list[4];
-    var question_type_number = url_list[5];
-    url_list[5] = parseInt(question_type_number ) + 1;
-
-    url = url_list.join('/');
-    location.href = url;
-}
-
-function search_UMLS() {
-    var str = document.getElementById("input-disease").value;
-    status = 0;
-    $("#api-response").html("<p>searching...</p>");
-    var tgt = session['tgt'];
-    var st = "loop";
-    if(tgt){
-        console.log("from cookie:");
-        get_st_from_UMLS(tgt);
-        st = serviceTicket;
-
-    } else {
-        console.log("from Auth:");
-        st = get_api_from_UMLS();
-    }
-    if(status != 200){
-        return
-    }
-    url = "https://uts-ws.nlm.nih.gov/rest/search/current";
-    $.getJSON(url, {"string":str,"ticket":st},load);
-}
-
-function load(res) {
-    $("#api-response").html("");
-    var results = res.result.results;
-    var result_length = results.length>6?6:results.length;
-    for (var l = 0; l<result_length; l++){
-        $("#api-response").append("<p><b>"+ results[l].ui +"</b> - <b>"+ results[l].name +"</b></p>");
-    }
-}
-
-function setCookies(c_name, value, expiretime) {
-    var exdate=new Date();
-    exdate.setTime(expiretime)
-    document.cookie = c_name+ "=" + escape(value) + ((expiretime==null) ? "" : ";expires="+exdate.toGMTString())
-}
-function start(){
-    var url = location.href;
-    var new_url = url + 'quiz/disease/1/';
-    location.href = new_url;
-}
-function getCookie(c_name){
-    if (document.cookie.length>0) {
-        c_start=document.cookie.indexOf(c_name + "=")
-        if (c_start!=-1) {
-            c_start=c_start + c_name.length+1
-            c_end=document.cookie.indexOf(";",c_start)
-            if (c_end==-1) c_end=document.cookie.length
-            return unescape(document.cookie.substring(c_start,c_end))
-        }
-    }
-    return ""
-}
-$('#input-disease').on('input',function(){
-    search_UMLS();
-})
-
-//for ie
-if(document.all){
-    $('input[type="text"]').each(function() {
-        var that=this;
-
-        if(this.attachEvent) {
-            this.attachEvent('onpropertychange',function(e) {
-                if(e.propertyName!='value') return;
-                $(that).trigger('input');
-            });
-        }
-    })
-
-
-}
+API_PATH = "http://localhost:8000/";
+CSRFTOKEN = '{{ csrf_token }}';
 </script>
 
 {% block extrascript %}{% endblock %}
