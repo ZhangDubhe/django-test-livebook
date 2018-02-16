@@ -67,7 +67,7 @@ function get_st_from_UMLS(tgt) {
 }
 
 function next_question(){
-    $.post(API_PATH + "next_quiz",{
+    $.post(API_PATH + "quiz/disease/"+uuid+"/",{
             uuid:"1",
             name:"Auth",
             csrfmiddlewaretoken:CSRFTOKEN
