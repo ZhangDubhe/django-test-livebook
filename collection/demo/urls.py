@@ -5,7 +5,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('document', views.document, name='docs'),
     path('demo', views.quiz, name='demo'),
-    path('umls_auth', views.umls_auth , name='umls_auth'),
+    path('umls-auth', views.umls_auth , name='umls-auth'),
+    path('upload-answer', views.upload_answer , name='upload-answer'),
     path('quiz/disease/<int:uuid>/', views.quiz, name='quiz')
     # path('polls', views.polls, name='polls'),
 ]

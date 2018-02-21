@@ -76,6 +76,12 @@ class DiseaseLink(models.Model):
     def __str__(self):
         return self.property_describe
 
+
+
+    def update_valid(self):
+        self.is_valid = (self.count_agree > self.count_disagree)
+        return self.is_valid
+
 class UserLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     value = models.ForeignKey(Value, on_delete=models.CASCADE)

@@ -24,6 +24,9 @@
 {% endblock %}
 
 {% block extrascript %}
+    <script>
+    session.setItem('uuid','{{ user.id }}');
+    </script>
     <script src="{% static "home/js/home.js" %}">
     </script>
     <script src="{% static "home/js/load.js" %}">

@@ -1,9 +1,9 @@
 
 $(function () {
 
-    $(".ans-btn").click(function () {
+    $(".ans-list>.ans-btn").click(function () {
         $(".selected-ans").append($(this));
-    })
+    });
 
     $('#input-disease').on('input',function(){
         search_UMLS();

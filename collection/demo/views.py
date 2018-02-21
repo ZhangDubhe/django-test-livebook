@@ -8,10 +8,8 @@ from reportlab.pdfgen import canvas
 import json
 import random
 
-from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User,UserLog
+from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value
 from .Authentication import Authentication as auth
-
-
 
 
 def index(request):
@@ -26,8 +24,11 @@ def index(request):
     })
 
 
-def get_random(model, number):
-    last = model.objects.count() - 1
+def get_random():
+    return random.uniform(0,3)
+
+
+#   1,2,3,4
 
 
 def user_auth(uuid):
@@ -41,7 +42,6 @@ def user_auth(uuid):
         return False
 
 
-
 def quiz(request, uuid):
     # check uuid
     try:
@@ -49,51 +49,95 @@ def quiz(request, uuid):
         if user.is_doctor:
             pass
         else:
-            return render(request, 'quiz/index.html', {
+            return render(request, 'home/index.html', {
                 'content': "Your have no such permission",
                 'title': 'Auth Error',
                 'username': user.user_name
             })
     except User.DoesNotExist:
-        return render(request, 'quiz/index.html', {
+        return render(request, 'home/index.html', {
             'content': "No this user",
             'title': 'Auth Error',
             'username': "no auth"
         })
 
-    try:
-        diseases = Disease.objects.filter(concept_type='Otitis').order_by('?')
-        length = diseases.count()
-
-    except:
-        diseases = ["Otitis"]
-        length = 1
-
     para = "You might want to search the term below?"
     user_name = _(user.user_name)
+
     try:
+        disease = Disease.objects.filter(concept_type='Otitis').order_by('?')[0]
+    except:
+        disease = "Otitis"
 
-        symptoms = Symptom.objects.order_by('?')[0:5]
-    #TODO:     to query which have link with the disease
-    except Symptom.DoesNotExist:
-        raise Http404("Symptoms do not exist")
+    is_symptom = DiseaseLink.objects.filter(disease_id=disease.id)
+    if is_symptom:
+        ran = get_random()
+        if ran <= 1:
+            type = "symptom"
+        elif 1 < ran <= 2:
+            type = "property"
+        elif 2 < ran <= 3:
+            type = "value"
+    else:
+        type = "symptom"
 
+    if type == "symptom":
+        if is_symptom:
+            try:
+                symptoms = []
+                for each in is_symptom:
+                    s_id = each.symptom_id
+                    symptoms.append(Symptom.objects.get(id=s_id))
+
+            # TODO:     to query which have link with the disease
+            except Symptom.DoesNotExist:
+                raise Http404("Symptoms do not exist")
+        else:
+            symptoms = None
+        properties = None
+        symptom = None
+        property_ = None
+        values_ = None
+
+    elif type == "property":
+        symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
+        try:
+            properties = Property.objects.filter(symptom__id=symptom.id)
+        except:
+	        properties = []
+
+        symptoms = None
+        property_ = None
+        values_ = None
+
+    elif type == "value":
+        s_id = is_symptom.order_by("?")[0].symptom_id
+        p_id = Value.objects.filter(symptom__id=s_id, disease__id=disease.id)
+        v_property = Property.objects.get(id=p_id)
+        v_values_ = None
+        properties = None
+        symptom = None
+        symptoms = None
+
+    #  query Tgt
     try:
         tgt = UMLS_tgt.objects.order_by('-add_at')[0]
         if not is_tgt_valid(tgt):
             tgt = create_new_tgt()
-
     except:
         tgt = create_new_tgt()
-
     return render(request, 'quiz/index.html', {
         'title': 'Home',
         'username': user_name,
+        'user': user,
         'para': para,
-        'disease': diseases[0],
-        'diseases_num': length,
-        'type': "symptom",
+        'type': type,
+        'disease': disease,
         'symptoms': symptoms,
+        'symptom': symptom,
+        'properties': properties,
+        'property': v_property,
+        'values': v_values,
         'tgt': tgt
     })
 
@@ -122,7 +166,50 @@ def update_disease(request):
         }))
 
 
-def update_symptom(request):
+def upload_answer(request):
+    if request.method == 'POST' and request.POST.get('name') == 'answer':
+
+        data = json.loads(request.POST.get('data'))
+
+        # data.question_id = $(".question-head")[0].id.split("_")[1];
+        # data.selections = select_info;
+        # {ans.id , ans.text};
+        # data.type = type;
+        question_id = data["question_id"]
+        selections = data["selections"]
+        type = data["type"]
+        if type == 'symptom':
+            for each in selections:
+                print(each["id"], each["text"])
+                symptom = Symptom.objects.get(content_unique_id=each["id"])
+                try:
+                    dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=symptom.id)
+                    count_a = dl.count_agree
+                    dl.count_agree = count_a + 1
+                    dl.save()
+                    result = "Update log success"
+                except:
+                    dl = DiseaseLink(disease_id=question_id, symptom_id=symptom.id, count_agree=1, count_disagree=0,
+                                     is_valid=True)
+                    dl.save()
+                    result = "Create log success"
+
+            status = 20
+        else:
+            status = 0
+            result = "updating database error"
+
+    else:
+        status = 0
+        result = "get data error"
+
+    return HttpResponse(json.dumps({
+        "result": result,
+        "status": status
+    }))
+
+
+def add_symptom(request):
     if request.method == "POST":
         name = request.POST.get('name')
         cui = request.POST.get('cui')
@@ -139,21 +226,14 @@ def update_symptom(request):
         }))
 
 
-def update_disease_link(request):
-    if request.method == "POST":
-        name = request.POST.get('name')
-        cui = request.POST.get('cui')
-        try:
-            DiseaseLink.objects.create(name=name, content_unique_id=cui)
-            result = "UPDATE Symptom success"
-            status = 20
-        except:
-            result = "UPDATE Symptom error"
-            status = 500
-        return HttpResponse(json.dumps({
-            "result": result,
-            "status": status
-        }))
+def update_disease_link(disease_id, symptom_id):
+    try:
+        result = DiseaseLink.objects.filter(disease_id=disease_id, symptom_id=symptom_id)
+    except:
+        result = "UPDATE Symptom success"
+        status = 20
+
+    return result;
 
 
 def umls_auth(request):
@@ -165,6 +245,7 @@ def umls_auth(request):
                 tgt_res = UMLS_tgt.objects.order_by('-add_at')[0]
             except:
                 tgt_res = None
+
             if tgt_res != None:
                 if is_tgt_valid(tgt_res):
                     pass

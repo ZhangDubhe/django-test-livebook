@@ -6,3 +6,11 @@
     background-color: #fafafa;
     box-shadow: #959595 1px 1px 1px;
 }
+#api-response .btn{
+    border-radius: 0;
+    width: 100%;
+    text-align: left;
+}#api-response .btn:hover{
+    background-color: #fafafa;
+
+}
