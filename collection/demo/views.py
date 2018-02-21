@@ -80,7 +80,9 @@ def quiz(request, uuid):
             type = "value"
     else:
         type = "symptom"
-
+    print("*"*10)
+    print("type:",type)
+    print("*"*10)
     if type == "symptom":
         if is_symptom:
             try:
@@ -181,7 +183,7 @@ def upload_answer(request):
         if type == 'symptom':
             for each in selections:
                 print(each["id"], each["text"])
-                symptom = Symptom.objects.get(content_unique_id=each["id"])
+                symptom = Symptom.objects.get(id=each["id"])
                 try:
                     dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=symptom.id)
                     count_a = dl.count_agree
@@ -193,7 +195,6 @@ def upload_answer(request):
                                      is_valid=True)
                     dl.save()
                     result = "Create log success"
-
             status = 20
         else:
             status = 0
@@ -208,6 +209,48 @@ def upload_answer(request):
         "status": status
     }))
 
+
+def search_terms(request):
+	if request.method == "GET":
+		type = request.GET.get("type")
+		str = request.GET.get("str")
+
+		status = 200
+		if type == "symptom":
+			res_list = []
+			results = Symptom.objects.filter( symptom_name__contains=str )
+			for each in results:
+				res = {}
+				res["name"] = each.symptom_name
+				res["id"] = each.id
+				res_list.append(res)
+			results = res_list
+
+		elif type == "property":
+			res_list = []
+			results = Property.objects.filter(property_describe__contains=str)
+			for each in results:
+				res = {}
+				res["name"] = each.property_describe
+				res["id"] = each.id
+				res_list.append(res)
+			results = res_list
+		elif type == "value":
+			res_list = []
+			results = Value.objects.filter(value_detail__contains=str)
+			for each in results:
+				res = {}
+				res["name"] = each.value_detail
+				res["id"] = each.id
+				res_list.append(res)
+			results = res_list
+		else:
+			results = "Wrong type in request."
+			status = 0
+		return HttpResponse(json.dumps({
+            "results": results,
+			"status": status
+        }))
 
 def add_symptom(request):
     if request.method == "POST":

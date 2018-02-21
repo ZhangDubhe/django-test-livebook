@@ -6,7 +6,7 @@ $(function () {
     });
 
     $('#input-disease').on('input',function(){
-        search_UMLS();
+        // search_database();
     });
 
 

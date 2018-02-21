@@ -109,6 +109,28 @@ function next_question(){
 
 }
 
+function search_database(type) {
+	var str = document.getElementById("input-disease").value;
+    status = 0;
+    $("#api-response").html("<p>searching...</p>");
+	var url =  API_PATH + "search-terms";
+	$.getJSON(url, {"str":str,"type":type},load_searching);
+}
+
+function load_searching(res) {
+	if (res.status == 0){
+		$("#api-response").html(res.results);
+		return
+	}
+    $("#api-response").html("");
+    var results = res.results;
+    var result_length = results.length>6?6:results.length;
+    for (var l = 0; l<result_length; l++){
+        $("#api-response").append("<p><a id='" + results[l].id +"' class='btn search-result'>"+ results[l].id +" -  <b class='search-result-text'>"+ results[l].name +"</b></a></p>");
+    }
+    searchResult();
+}
+
 function search_UMLS() {
     var str = document.getElementById("input-disease").value;
     status = 0;
@@ -126,10 +148,10 @@ function search_UMLS() {
         return
     }
     url = "https://uts-ws.nlm.nih.gov/rest/search/current";
-    $.getJSON(url, {"string":str,"ticket":st},load);
+    $.getJSON(url, {"string":str,"ticket":st},load_UMLS_searching);
 }
 
-function load(res) {
+function load_UMLS_searching(res) {
     $("#api-response").html("");
     var results = res.result.results;
     var result_length = results.length>6?6:results.length;

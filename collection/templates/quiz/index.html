@@ -39,13 +39,13 @@
         {% if type == "property" %}
         <div class="col-xs-12 col-sm-12 mb-4 ans-list">
             {% if properties %}
-                 {% for symptom in symptoms %}
-                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.content_unique_id }}">{{ symptom.symptom_name }}</button>
+                 {% for property in properties %}
+                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ property.id }}">{{ property.property_describe }}</button>
                 {% endfor %}
                 <p>or more?</p>
             {% endif %}
             {% if not properties %}
-                <p> Please input to search other symptoms...</p>
+                <p> Please input to search other properties which have existed...</p>
             {% endif %}
         </div>
         {% endif %}
@@ -53,19 +53,21 @@
         {% if type == "value" %}
         <div class="col-xs-12 col-sm-12 mb-4 ans-list">
             {% if values %}
-                 {% for symptom in values %}
-                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.content_unique_id }}">{{ symptom.symptom_name }}</button>
+                 {% for value in values %}
+                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ value.id }}">{{ value.value_detail }}</button>
                 {% endfor %}
                 <p>or more?</p>
             {% endif %}
             {% if not values %}
-                <p> Please input to search other symptoms...</p>
+                <p> Please input to search other values...</p>
             {% endif %}
         </div>
         {% endif %}
 
         <div class="input-group col-xs-10 col-sm-10 mb-4">
-            <input type="text" class="form-control" id="input-disease" oninput="search_UMLS()">
+{#            <input type="text" class="form-control" id="input-disease" oninput="search_UMLS()">#}
+	        <input type="text" class="form-control" id="input-disease" oninput="search_database('{{ type }}')">
+
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" onclick="add_symptom()">Add</button>
             </div>
