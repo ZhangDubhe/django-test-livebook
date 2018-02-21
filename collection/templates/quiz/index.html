@@ -17,7 +17,8 @@
                 <h4 id="q_{{ symptom.id }}" class="question-head">Q: What properties does "{{ symptom.symptom_name }}" have? </h4>
             {% endif %}
             {% if type == "value" %}
-                <h4 id="q_{{ disease.id }}" class="question-head">Q: What values does "{{ property }}" have in {{ disease.name }}? </h4>
+                <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">Q: What values does "{{ property }}" have in {{ disease.name }}? </h4>
+	            <p>Please add the unit (days, minutes, degree Celsius) </p>
             {% endif %}
 
         </div>
@@ -26,7 +27,7 @@
         <div class="col-xs-12 col-sm-12 mb-4 ans-list">
             {% if symptoms %}
                  {% for symptom in symptoms %}
-                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.content_unique_id }}">{{ symptom.symptom_name }}</button>
+                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.id }}">{{ symptom.symptom_name }}</button>
                 {% endfor %}
                 <p>or more?</p>
             {% endif %}
@@ -45,7 +46,7 @@
                 <p>or more?</p>
             {% endif %}
             {% if not properties %}
-                <p> Please input to search other properties which have existed...</p>
+                <p> Please input to search other properties ... if there is not, you can  add more</p>
             {% endif %}
         </div>
         {% endif %}
@@ -59,7 +60,7 @@
                 <p>or more?</p>
             {% endif %}
             {% if not values %}
-                <p> Please input to search other values...</p>
+                <p> Please input to <b>add</b> values</p>
             {% endif %}
         </div>
         {% endif %}
@@ -110,6 +111,7 @@
     <script>
         session.setItem('tgt','{{ tgt }}');
         session.setItem('uuid','{{ user.id }}');
+        session.setItem('type','{{ type }}');
     </script>
     <script src="{% static "home/js/home.js" %}">
     </script>

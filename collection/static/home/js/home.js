@@ -74,9 +74,9 @@ function after_add() {
 function next_question(){
     var $select_btns = $(".selected-ans button");
     var select_info = [];
-    var type = "symptom";
+    var type = session.type;
     if($select_btns.length === 0){
-        layer.msg("Please select correct symptoms or add new one.");
+        layer.msg("Please select correct answers or add new one.");
         return
     }
     for(var i = 0; i < $select_btns.length; i++){
@@ -86,7 +86,9 @@ function next_question(){
         select_info[i] = ans;
     }
     var data = {};
+
     data["question_id"] = $(".question-head")[0].id.split("_")[1];
+
     data["selections"] = select_info;
     data["type"] = type;
     console.log(data);
@@ -103,6 +105,8 @@ function next_question(){
                 layer.msg(res.result);
                 setTimeout(1000,location.reload());
 
+            } else if (res.status == 0){
+                layer.msg(res.result);
             }
         }
     )
