@@ -96,8 +96,8 @@ def quiz(request, uuid):
             symptoms = None
         properties = None
         symptom = None
-        property_ = None
-        values_ = None
+        v_property = None
+        v_values = None
 
     elif type == "property":
         symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
@@ -107,14 +107,14 @@ def quiz(request, uuid):
 	        properties = []
 
         symptoms = None
-        property_ = None
-        values_ = None
+        v_property = None
+        v_values = None
 
     elif type == "value":
         s_id = is_symptom.order_by("?")[0].symptom_id
         p_id = Value.objects.filter(symptom__id=s_id, disease__id=disease.id)
         v_property = Property.objects.get(id=p_id)
-        v_values_ = None
+        v_values = None
         properties = None
         symptom = None
         symptoms = None
