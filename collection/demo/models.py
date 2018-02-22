@@ -75,12 +75,19 @@ class DiseaseLink(models.Model):
     class Meta:
         unique_together = ('disease', 'symptom')
 
-    def __str__(self):
-        return "Disease:"+self.disease+",Symptoms:"+self.symptom+" - is_Valid?"+self.is_valid
-
     def update_valid(self):
         self.is_valid = (self.count_agree > self.count_disagree)
         return self.is_valid
+
+    def __str__(self):
+        if self.is_valid:
+            valid = "is Valid"
+        else:
+            valid = "No valid"
+        disease_text = "Disease:"+str(self.disease.id)+" "+self.disease.name
+        symptom_text = "Symptoms:"+str(self.symptom.id)+" "+self.symptom.symptom_name
+        return disease_text+" + "+symptom_text+" - "+valid
+
 
 class UserLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
