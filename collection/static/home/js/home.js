@@ -14,21 +14,30 @@ function get_def_umls(cui) {
     }
     url = "https://uts-ws.nlm.nih.gov/rest/content/current/CUI/"+cui+"/definitions";
     $.getJSON(url, {"ticket":st},function (res) {
-        var result = res.result[0];
-        var def = result.value;
-        $("#disease-def").html(def);
+	    var res_list = res.result;
+        // var result = res.result[0];
+	    var def = "";
+	    for(var i = 0; i < res_list.length; i++){
+	    	if(res_list[i].rootSource == "MSH"){
+	    		def = res_list[i].value;
+		    }
+	    }
+	    if(def == ""){
+	    	$("#disease-def").html("Sorry, there is no MSH defination about this disease.");
+	    }else {
+	    	$("#disease-def").html(def);
+	    }
     }).fail(function () {
         $("#disease-def").html("Sorry, there is no defination about this disease.");
     });
 }
+
 function add_symptom(){
     var text = $("#input-disease").val();
     $(".selected-ans").append("<button class='btn btn-info mr-2 mb-2 ans-btn' >"+ text +"</button>");
 }
 
-
 function get_api_from_UMLS(){
-
     $.post(
         API_PATH + "umls-auth",
         {
@@ -59,12 +68,12 @@ function get_st_from_UMLS(tgt) {
         type:"post",
         async:false,
         success:function (data) {
-            console.log("res:",data);
             status = 200;
             serviceTicket = data;
             return serviceTicket
     }});
 }
+
 function after_add() {
     $(".selected-ans>.ans-btn").click(function () {
         $(".ans-list").append($(this));
@@ -86,9 +95,7 @@ function next_question(){
         select_info[i] = ans;
     }
     var data = {};
-
     data["question_id"] = $(".question-head")[0].id.split("_")[1];
-
     data["selections"] = select_info;
     data["type"] = type;
     console.log(data);
@@ -104,7 +111,6 @@ function next_question(){
             if(res.status == 20){
                 layer.msg(res.result);
                 setTimeout(1000,location.reload());
-
             } else if (res.status == 0){
                 layer.msg(res.result);
             }
@@ -115,7 +121,6 @@ function next_question(){
 
 function search_database(type) {
 	var str = document.getElementById("input-disease").value;
-
     status = 0;
     $("#api-response").html("<p>searching...</p>");
     if(str.length <= 1 || str == "" || str == " "){
@@ -153,7 +158,6 @@ function search_UMLS() {
         get_st_from_UMLS(tgt);
         st = serviceTicket;
     } else {
-        console.log("from Auth:");
         st = get_api_from_UMLS();
     }
     if(status != 200){
@@ -173,6 +177,7 @@ function load_UMLS_searching(res) {
     }
     searchResult();
 }
+
 function start(){
     var new_url = API_PATH + 'quiz/disease/'+ session.uuid +'/';
     location.href = new_url;
