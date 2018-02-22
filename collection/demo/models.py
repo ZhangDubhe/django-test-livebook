@@ -63,7 +63,7 @@ class Value(models.Model):
     class Meta:
         unique_together = ('disease', 'symptom', 'property')
     def __str__(self):
-        return self.property_describe
+        return self.value_detail
 
 class DiseaseLink(models.Model):
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name='diseases', default=1)
@@ -76,9 +76,7 @@ class DiseaseLink(models.Model):
         unique_together = ('disease', 'symptom')
 
     def __str__(self):
-        return self.property_describe
-
-
+        return "Disease:"+self.disease+",Symptoms:"+self.symptom+" - is_Valid?"+self.is_valid
 
     def update_valid(self):
         self.is_valid = (self.count_agree > self.count_disagree)
