@@ -42,7 +42,7 @@ def user_auth(uuid):
 		return False
 
 
-def quiz(request, uuid):
+def quiz(request, uuid, **topic):
 	# check uuid
 	try:
 		user = User.objects.get(pk=uuid)
@@ -63,14 +63,17 @@ def quiz(request, uuid):
 
 	para = "You might want to search the term below?"
 	user_name = _(user.user_name)
+	if not topic :
+		topic = 'Otitis'
 
 	try:
-		disease = Disease.objects.filter(concept_type='Otitis').order_by('?')[0]
+		disease = Disease.objects.filter(concept_type=topic).order_by('?')[0]
 	except:
 		disease = "Otitis"
 
 	is_symptom = DiseaseLink.objects.filter(disease_id=disease.id)
 	if is_symptom:
+
 		ran = get_random()
 		symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
 		is_property = Property.objects.filter(symptom__id=symptom.id)
@@ -85,9 +88,7 @@ def quiz(request, uuid):
 				type = "property"
 	else:
 		type = "symptom"
-	print("*" * 10)
-	print("type:", type)
-	print("*" * 10)
+
 	if type == "symptom":
 		if is_symptom:
 			try:
@@ -95,8 +96,6 @@ def quiz(request, uuid):
 				for each in is_symptom:
 					s_id = each.symptom_id
 					symptoms.append(Symptom.objects.get(id=s_id))
-
-			# TODO:     to query which have link with the disease
 			except Symptom.DoesNotExist:
 				raise Http404("Symptoms do not exist")
 		else:
@@ -118,14 +117,11 @@ def quiz(request, uuid):
 		v_values = None
 
 	elif type == "value":
-
+		v_property = Property.objects.filter(symptom__id=s_id).order_by("?")[0]
 		s_id = symptom.id
 		try:
-			p_id = Value.objects.filter(symptom__id=s_id, disease__id=disease.id)
-			v_property = Property.objects.get(id=p_id)
-			v_values = Value.objects.get(symptom__id=s_id, disease__id=disease.id, property__id=p_id)
+			v_values = Value.objects.get(symptom__id=s_id, disease__id=disease.id, property__id=v_property.id)
 		except:
-			v_property = Property.objects.filter(symptom__id=s_id).order_by("?")[0]
 			v_values = None
 		properties = None
 		symptoms = None
@@ -234,7 +230,7 @@ def upload_answer(request):
 						result = "Create value log success"
 						status = 20
 					except:
-						result = "Create Errot Please Try Again"
+						result = "Create Error. Please Try Again"
 						status = 0
 				else:
 					resist_value = Property.objects.get(id=each["id"])
