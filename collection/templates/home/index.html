@@ -24,6 +24,8 @@
 {% endblock %}
 
 {% block extrascript %}
+	<script src="{% static "auth.js" %}">
+    </script>
     <script>
     session.setItem('uuid','{{ user.id }}');
     </script>

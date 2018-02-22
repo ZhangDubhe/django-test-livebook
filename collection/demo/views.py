@@ -120,7 +120,7 @@ def quiz(request, uuid, **topic):
 		s_id = symptom.id
 		v_property = Property.objects.filter(symptom__id=s_id).order_by("?")[0]
 		try:
-			v_values = Value.objects.get(symptom__id=s_id, disease__id=disease.id, property__id=v_property.id)
+			v_values = Value.objects.filter(symptom__id=s_id, disease__id=disease.id, property__id=v_property.id)
 		except:
 			v_values = None
 		properties = None
