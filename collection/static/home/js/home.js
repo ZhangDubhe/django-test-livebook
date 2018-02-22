@@ -115,10 +115,18 @@ function next_question(){
 
 function search_database(type) {
 	var str = document.getElementById("input-disease").value;
+
     status = 0;
     $("#api-response").html("<p>searching...</p>");
-	var url =  API_PATH + "search-terms";
-	$.getJSON(url, {"str":str,"type":type},load_searching);
+    if(str.length <= 1 || str == "" || str == " "){
+    	if(str == "" || str == " ")$("#api-response").html("<p></p>");
+	    return
+    }
+    else{
+		var url =  API_PATH + "search-terms";
+		$.getJSON(url, {"str":str,"type":type},load_searching);
+    }
+
 }
 
 function load_searching(res) {
