@@ -1,32 +1,49 @@
 {% extends "../base_site.html" %}
 
 {% block title %}{{ title }}{% endblock %}
+{% block pretitle %}
+	<h4>For LiveBook <small>A collection system</small></h4>
+{% endblock %}
 
-{% block content %}
-<h1>For LiveBook <small>A collection system</small></h1>
-<form action="{% url 'login' %}" class="form-horizontal" method="post" >
+{% block login-component %}
+
+<form action="{% url 'login-post' %}" class="form-horizontal" method="post" >
     {% csrf_token %}
 
-  <div class="form-group">
-    <label class="col-sm-2 control-label">User Name</label>
-    <div class="col-sm-10">
+  <div class="form-group row">
+    <label class="col-sm-4 control-label">User Name</label>
+    <div class="col-sm-8">
       <input type="text" class="form-control" id="inputName" placeholder="Username" name="username">
     </div>
   </div>
-  <div class="form-group">
-    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
-    <div class="col-sm-10">
+  <div class="form-group row">
+    <label for="inputPassword" class="col-sm-4 control-label">Password</label>
+    <div class="col-sm-8">
       <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" >
     </div>
   </div>
-	<a href="{% url 'register' %}">already have account</a>
-    <button type="submit">Login</button>
+
+	<div class="form-group row">
+		<div class="col-sm-4"></div>
+		<div class="col-sm-8">
+			<a href="{% url 'register' %}">no account?</a>
+			<button type="submit" class="btn btn-primary mb-2">Login</button>
+		</div>
+	</div>
+
+	{% if other %}
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+		<strong>Opppps!</strong> {{ other }}
+	</div>
+	{% endif %}
+
 </form>
 
 {% endblock %}
 
 {% block extrascript %}
     <script>
-
+		{% if other %}
+		{% endif %}
     </script>
 {% endblock %}

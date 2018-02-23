@@ -2,38 +2,68 @@
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block content %}
-<h1>For LiveBook <small>A collection system</small></h1>
-<form action="{% url 'register' %}" class="form-horizontal" method="post" >
+{% block login-component %}
+
+<form action="{% url 'register-post' %}" class="form-horizontal" method="post" >
     {% csrf_token %}
 
-  <div class="form-group">
-    <label class="col-sm-2 control-label">User Name</label>
-    <div class="col-sm-10">
+  <div class="form-group row">
+    <label class="col-sm-4 control-label">User Name</label>
+    <div class="col-sm-8">
       <input type="text" class="form-control" id="inputName" placeholder="Username" name="username">
     </div>
   </div>
 
-	<div class="form-group">
-    <label class="col-sm-2 control-label">Email</label>
-    <div class="col-sm-10">
-      <input class="form-control-static" placeholder="email@example.com"  name="email">
+	<div class="form-group row">
+    <label class="col-sm-4 control-label">Email</label>
+    <div class="col-sm-8">
+      <input class="form-control" placeholder="email@example.com"  name="email">
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
-    <div class="col-sm-10">
+	<div class="form-group row">
+    <label class="col-sm-4 control-label">Organization</label>
+    <div class="col-sm-8">
+      <input class="form-control" placeholder="University of Alberta"  name="org">
+    </div>
+  </div>
+
+	<div class="form-group row">
+    <label class="col-sm-8 control-label">Are you studying relate subject?</label>
+    <div class="col-sm-4">
+      <input type="checkbox"  name="relate">
+    </div>
+  </div>
+
+	<div class="form-group row">
+    <label class="col-sm-8 control-label">Are you doctors?</label>
+    <div class="col-sm-4">
+      <input type="checkbox"  name="doctor">
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="inputPassword" class="col-sm-4 control-label">Password</label>
+    <div class="col-sm-8">
       <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Password">
     </div>
   </div>
 
-	<a href="{% url 'login' %}">already have account</a>
-    <button type="submit">Register</button>
+	<div class="form-group row ">
+		<div class="mx-auto">
+			<a href="{% url 'login' %}">already have account</a>
+			<button type="submit" class="btn btn-primary mb-2">Register</button>
+		</div>
+	</div>
+
+	{% if other %}
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+		<strong>Opppps!</strong> {{ other }}
+	</div>
+	{% endif %}
 </form>
 
 {% endblock %}
-m
 {% block extrascript %}
     <script>
 

@@ -25,6 +25,10 @@
 
 {% block extrascript %}
 	<script>
+		{% if user.user_name %}
+			login('{{ user.id }}');
+			console.log('{{ user.user_name }}');
+		{% endif %}
 		check_login();
 	</script>
     <script src="{% static "home/js/home.js" %}">

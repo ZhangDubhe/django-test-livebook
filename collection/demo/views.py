@@ -11,18 +11,84 @@ import random
 from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value
 from .Authentication import Authentication as auth
 
-def login(request):
+def register(request):
+	status = 0
 	if request.method == "POST":
-	    m = User.objects.get(user_name=request.POST.get['username'])
-	    if not m:
-		    return HttpResponse("Wrong  user name")
-	    if m.user_password == request.POST.get['password']:
-	        request.session['uuid'] = m.id
-	        return HttpResponse("You're logged in.")
-	    else:
-	        return HttpResponse("Wrong password")
+		username = request.POST.get('username')
+		useremail = request.POST.get('email')
+		userpassword = request.POST.get('password')
+		organization = request.POST.get('org')
+		is_related = request.POST.get('relate')
+		is_doctor = request.POST.get('doctor')
+		if is_related == "on":
+			is_related = True
+		else:
+			is_related = False
+		if is_doctor == "on":
+			is_doctor = True
+		else:
+			is_doctor = False
+		try:
+			is_resist_user = User.objects.get(user_name=username)
+			if is_resist_user:
+				results = "Already have this name, please input another."
+		except User.DoesNotExist:
+			try:
+				user = User(user_name=username, user_email=useremail, user_password=userpassword,user_organization=organization,is_doctor = is_doctor, is_related = is_related)
+				user.save()
+				results = "Welcome!"
+				status = 20
+			except:
+				results = "Create user error"
+
+	if status == 20:
+		user_name = _(user.user_name)
+		content = "Are you ready?"
+		para = "Today topic is about Otitis (Ear inflammation), there are around three disease in this topic. Now let's challenge."
+		return render(request, 'home/index.html', {
+			'content': content,
+			'title': 'Home',
+			'username': user_name,
+			'user': user,
+			'para': para
+		})
 	else:
-		return HttpResponse("Wrong request")
+		return render(request, 'registration/register.html', {
+			'title': 'Login',
+			'other': results
+		})
+
+def login(request):
+	status = 0
+	if request.method == "POST":
+		try:
+			m = User.objects.get(user_name=request.POST.get('username'))
+			if m.user_password == request.POST.get('password'):
+				msg = "You're logged in."
+				status = 20
+			else:
+				msg = "Wrong password"
+		except User.DoesNotExist:
+			msg = "Wrong user name, please register!"
+
+	else:
+		msg = "Wrong request"
+	if status == 20:
+		user_name = _(m.user_name)
+		content = "Are you ready?"
+		para = "Today topic is about Otitis (Ear inflammation), there are around three disease in this topic. Now let's challenge."
+		return render(request, 'home/index.html', {
+			'content': content,
+			'title': 'Home',
+			'username': user_name,
+			'user': m,
+			'para': para
+		})
+	else:
+		return render(request, 'registration/login.html', {
+			'title': 'Login',
+			'other': msg
+		})
 
 def logout(request):
 	return render(request, 'registration/logout.html', {
@@ -44,12 +110,7 @@ def init_register(request):
 		'title': 'Register'
 	})
 
-def register(request):
-    try:
-        user = User(user_name="")
-    except KeyError:
-        pass
-    return HttpResponse("You're logged out.")
+
 
 def index(request):
 	user_name = _("user")
