@@ -11,6 +11,45 @@ import random
 from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value
 from .Authentication import Authentication as auth
 
+def login(request):
+	if request.method == "POST":
+	    m = User.objects.get(user_name=request.POST.get['username'])
+	    if not m:
+		    return HttpResponse("Wrong  user name")
+	    if m.user_password == request.POST.get['password']:
+	        request.session['uuid'] = m.id
+	        return HttpResponse("You're logged in.")
+	    else:
+	        return HttpResponse("Wrong password")
+	else:
+		return HttpResponse("Wrong request")
+
+def logout(request):
+	return render(request, 'registration/logout.html', {
+
+	})
+
+def password_change(request):
+	return render(request, 'registration/logout.html', {
+
+	})
+
+def init_login(request):
+	return render(request, 'registration/login.html', {
+		'title': 'Login'
+	})
+
+def init_register(request):
+	return render(request, 'registration/register.html', {
+		'title': 'Register'
+	})
+
+def register(request):
+    try:
+        user = User(user_name="")
+    except KeyError:
+        pass
+    return HttpResponse("You're logged out.")
 
 def index(request):
 	user_name = _("user")

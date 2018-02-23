@@ -1,8 +1,12 @@
 from django.urls import path
 from . import views
-
+from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.index, name='index'),
+    path('account/login', views.init_login, name="login"),
+    path('account/register',views.init_register, name="register"),
+    path('account/logout', views.logout, name="logout"),
+    path('account/psw', views.password_change, name="psw"),
     path('document', views.document, name='docs'),
     path('demo', views.quiz, name='demo'),
     path('umls-auth', views.umls_auth , name='umls-auth'),

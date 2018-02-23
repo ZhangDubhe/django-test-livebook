@@ -30,8 +30,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'newhub.apps.NewhubConfig',
-    'oldhub.apps.OldhubConfig',
     'demo.apps.DemoConfig',
     'django.contrib.admin',
     'django.contrib.auth',

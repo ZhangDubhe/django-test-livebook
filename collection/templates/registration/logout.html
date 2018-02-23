@@ -1,0 +1,22 @@
+{% extends "../base_site.html" %}
+
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+<h1>For LiveBook <small>A collection system</small></h1>
+<form action="{% url 'login' %}" class="form-horizontal" method="post" >
+    {% csrf_token %}
+
+  <div class="form-group">
+	<p>Are you sure to log out?</p>
+  </div>
+    <button type="submit">Log out</button>
+</form>
+
+{% endblock %}
+m
+{% block extrascript %}
+    <script>
+
+    </script>
+{% endblock %}

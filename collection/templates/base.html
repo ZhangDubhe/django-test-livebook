@@ -54,6 +54,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script src="{% static "layer/layer.js" %}"></script>
+<script src="{% static "auth.js" %}"></script>
 
 <script>
 status = 0;
@@ -61,7 +62,8 @@ serviceTicket = "";
 session = sessionStorage;
 API_PATH = "http://localhost:8000/";
 CSRFTOKEN = '{{ csrf_token }}';
-uuid = "1";
+
+
 </script>
 
 {% block extrascript %}{% endblock %}

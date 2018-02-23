@@ -1,0 +1,32 @@
+{% extends "../base_site.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1>For LiveBook <small>A collection system</small></h1>
+<form action="{% url 'login' %}" class="form-horizontal" method="post" >
+    {% csrf_token %}
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label">User Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="inputName" placeholder="Username" name="username">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" >
+    </div>
+  </div>
+	<a href="{% url 'register' %}">already have account</a>
+    <button type="submit">Login</button>
+</form>
+
+{% endblock %}
+
+{% block extrascript %}
+    <script>
+
+    </script>
+{% endblock %}

@@ -109,11 +109,9 @@
 
 {% block extrascript %}
     <script>
+        check_login();
         session.setItem('tgt','{{ tgt }}');
-        session.setItem('uuid','{{ user.id }}');
         session.setItem('type','{{ type }}');
-    </script>
-	<script src="{% static "auth.js" %}">
     </script>
     <script src="{% static "home/js/home.js" %}">
     </script>
