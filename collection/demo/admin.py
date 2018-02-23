@@ -9,7 +9,7 @@ class UserAdmin(admin.ModelAdmin):
         ('User',             {'fields': ['user_name']}),
         ('User information', {'fields': ['user_email','user_organization','is_related','is_doctor'], 'classes': ['collapse']}),
     ]
-    list_display = ('user_name','user_email','user_organization','is_related','is_doctor','add_at')
+    list_display = ('user_name','user_email','user_organization','is_related','is_doctor','add_at','is_admin')
 
 admin.site.register(Disease)
 admin.site.register(Symptom)
