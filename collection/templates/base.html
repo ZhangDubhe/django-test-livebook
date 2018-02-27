@@ -18,27 +18,33 @@
 
 <!-- Container -->
 <div id="container">
+	{%  block baner %}
     <div id="header" class="navbar navbar-default navbar-fixed-top navbar-light bg-light">
         {% block branding %}
             <a id="site-name" class="navbar-brand" href="#">Data For Livebook Demo</a>
         {% endblock %}
         {% block nav %}{% endblock %}
     </div>
+	{% endblock %}
 
     <!-- Content -->
     <div id="content"  class="container px-2">
 
-        <div class="row mt-4 mb-2">
+        <div class="row mt-4 mb-4">
 			{% block pretitle %}{% endblock %}
         </div>
 	    <div class="row mt-4 mb-2">
             {% block content %}
                 {{ content }}
             {% endblock %}
+
+	        <div class="ml-auto mr-auto col-xs-8 col-sm-6 col-lg-4">
+		        {% block login-component %}{% endblock %}
+	        </div>
+
         </div>
 
         {% block sidebar %}{% endblock %}
-        {% block login-component %}{% endblock %}
         <br class="clear" />
     </div>
     <!-- END Content -->
