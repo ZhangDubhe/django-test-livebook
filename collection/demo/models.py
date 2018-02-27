@@ -3,8 +3,6 @@ from django.utils import timezone
 
 
 # Create your models here.
-
-
 class UMLS_tgt(models.Model):
     ticket = models.CharField(max_length=250, unique=True)
     add_at = models.DateTimeField('createdAt', auto_now_add=True)
