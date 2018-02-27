@@ -11,6 +11,12 @@ import random
 from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value
 from .Authentication import Authentication as auth
 
+def auth_error(request, result):
+	return render(request, 'registration/register.html', {
+		'title': 'Register',
+		'other': result
+	})
+
 def register(request):
 	status = 0
 	if request.method == "POST":
@@ -20,22 +26,31 @@ def register(request):
 		organization = request.POST.get('org')
 		is_related = request.POST.get('relate')
 		is_doctor = request.POST.get('doctor')
-		if user_name & useremail & userpassword:
+
+		result = 'Information not complete'
+		if username:
 			pass
 		else:
-			return render(request, 'registration/register.html', {
-			'title': 'Register',
-			'other': 'Please input this information.'
-		})
+			return auth_error(request,result)
+		if useremail:
+			pass
+		else:
+			return auth_error(request,result)
+		if userpassword:
+			pass
+		else:
+			return auth_error(request,result)
 
 		if is_related == "on":
 			is_related = True
 		else:
 			is_related = False
+
 		if is_doctor == "on":
 			is_doctor = True
 		else:
 			is_doctor = False
+
 		try:
 			is_resist_user = User.objects.get(user_name=username)
 			if is_resist_user:
