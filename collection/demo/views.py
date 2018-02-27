@@ -20,6 +20,14 @@ def register(request):
 		organization = request.POST.get('org')
 		is_related = request.POST.get('relate')
 		is_doctor = request.POST.get('doctor')
+		if user_name & useremail & userpassword:
+			pass
+		else:
+			return render(request, 'registration/register.html', {
+			'title': 'Register',
+			'other': 'Please input this information.'
+		})
+
 		if is_related == "on":
 			is_related = True
 		else:
@@ -34,7 +42,7 @@ def register(request):
 				results = "Already have this name, please input another."
 		except User.DoesNotExist:
 			try:
-				user = User(user_name=username, user_email=useremail, user_password=userpassword,user_organization=organization,is_doctor = is_doctor, is_related = is_related)
+				user = User(user_name=username, user_email=useremail, user_password=userpassword,user_organization=organization,is_doctor = is_doctor, is_related = is_related, is_admin= False)
 				user.save()
 				results = "Welcome!"
 				status = 20
@@ -54,7 +62,7 @@ def register(request):
 		})
 	else:
 		return render(request, 'registration/register.html', {
-			'title': 'Login',
+			'title': 'Register',
 			'other': results
 		})
 
