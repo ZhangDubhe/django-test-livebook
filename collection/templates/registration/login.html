@@ -1,5 +1,8 @@
 {% extends "../base_site.html" %}
-
+{% load i18n static %}
+{% block extrastyle %}
+	<link rel="stylesheet" type="text/css" href="{% static "registration/style.css" %}" />
+{% endblock %}
 {% block title %}{{ title }}{% endblock %}
 {% block baner %}{% endblock %}
 {% block login-component %}
@@ -8,25 +11,25 @@
     {% csrf_token %}
 
 	<div class="form-group row justify-content-center">
-	  <div class="col-sm-12 mb-4">
-	  <h4>For LiveBook <small>A collection system</small></h4>
-	  </div>
+		<div class="col-sm-12 mb-4">
+		<h4>For LiveBook <small>A collection system</small></h4>
+		</div>
 	</div>
 
 	<div class="form-group row justify-content-center">
 	    <h5>Log in...</h5>
 	</div>
 
-  <div class="form-group row">
-    <div class="col-sm-12">
-      <input type="text" class="form-control" id="inputName" placeholder="Username" name="username">
-    </div>
-  </div>
-  <div class="form-group row">
-    <div class="col-sm-12">
-      <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" >
-    </div>
-  </div>
+	<div class="form-group row">
+	<div class="col-sm-12">
+        <input type="text" class="form-control" id="inputName" placeholder="Username" name="username">
+	</div>
+	</div>
+	<div class="form-group row">
+	<div class="col-sm-12">
+        <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" >
+	</div>
+	</div>
 
 	<div class="form-group row">
 		<div class="col-sm-12">
@@ -47,6 +50,11 @@
 </form>
 
 {% endblock %}
+
+{% block footer %}
+	 Power by <a href="https://www.djangoproject.com/">Django</a>.
+{% endblock %}
+
 
 {% block extrascript %}
     <script>

@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
 		('User', {'fields': ['user_name']}),
 		('User information', {'fields': ['user_email', 'user_organization', 'is_related', 'is_doctor', 'user_password'], 'classes': ['collapse']}),
 	]
-	list_display = ('user_name', 'user_email', 'user_organization', 'is_related', 'is_doctor', 'add_at','user_password', 'is_admin')
+	list_display = ('user_name', 'user_email', 'user_organization', 'is_related', 'is_doctor', 'add_at', 'user_password', 'is_admin')
 
 
 class DiseaseAdmin(admin.ModelAdmin):

@@ -1,0 +1,15 @@
+.btn,.form-control{
+    border-radius: 2rem;
+}
+.footer{
+    height: 1rem;
+    font-size: 0.5rem;
+    text-align: center;
+    width:10rem;
+    border-radius: 1rem;
+    background-color: #414141;
+    color: #919191;
+}
+.footer a{
+    color: #aeaeae;
+}

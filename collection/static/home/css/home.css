@@ -21,16 +21,21 @@
     line-height: 2;
     border-radius: 3rem;
     padding: 0 0.6rem 0.4rem 0.6rem;
+    display: inline-block;
 }
 .agree-div{
+    margin-top:4rem;
+    padding-top: 4rem;
     text-align: center;
 }
+.agree-div button{
+    width:30%;
+    margin:3%;
+}
 .agree{
-    width: 8rem;
     border-radius: 3rem;
 }
 .disagree{
-    width: 8rem;
     border-radius: 3rem;
 }
 h4 .badge {
