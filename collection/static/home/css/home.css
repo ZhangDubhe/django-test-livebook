@@ -10,7 +10,29 @@
     border-radius: 0;
     width: 100%;
     text-align: left;
-}#api-response .btn:hover{
+}
+#api-response .btn:hover{
     background-color: #fafafa;
-
+}
+.valid-word{
+    background-color: #28a745ba;
+    font-weight: 600;
+    color: #fff;
+    line-height: 2;
+    border-radius: 3rem;
+    padding: 0 0.6rem 0.4rem 0.6rem;
+}
+.agree-div{
+    text-align: center;
+}
+.agree{
+    width: 8rem;
+    border-radius: 3rem;
+}
+.disagree{
+    width: 8rem;
+    border-radius: 3rem;
+}
+h4 .badge {
+    font-size: 55%;
 }

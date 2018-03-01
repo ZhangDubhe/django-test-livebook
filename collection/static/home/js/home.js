@@ -80,26 +80,35 @@ function after_add() {
     });
 }
 
-function next_question(){
-    var $select_btns = $(".selected-ans button");
-    var select_info = [];
+function next_question(obj){
     var type = session.type;
-    if($select_btns.length === 0){
-        layer.msg("Please select correct answers or add new one.");
-        return
-    }
-    for(var i = 0; i < $select_btns.length; i++){
-        var ans = {};
-        ans.id = $select_btns[i].id;
-        ans.text = $($select_btns[i]).html();
-        select_info[i] = ans;
-    }
     var data = {};
-    data["question_id"] = $(".question-head")[0].id.split("_")[1];
-    data["selections"] = select_info;
+    if(type.indexOf('valid')>0){
+    	var ans = $(".valid-word").attr('id');
+    	data["selections"] = parseInt(ans.split("_")[1]);
+    	data["is_agree"] = $(obj).attr("value");
+    }
+    else{
+	    var $select_btns = $(".selected-ans button");
+	    var select_info = [];
+	
+	    if($select_btns.length === 0){
+	        layer.msg("Please select correct answers or add new one.");
+	        return
+	    }
+	    for(var i = 0; i < $select_btns.length; i++){
+	        var ans = {};
+	        ans.id = $select_btns[i].id;
+	        ans.text = $($select_btns[i]).html();
+	        select_info[i] = ans;
+	    }
+	    data["selections"] = select_info;
+    }
     data["type"] = type;
+    data["question_id"] = $(".question-head")[0].id.split("_")[1];
     console.log(data);
     data = JSON.stringify(data);
+	
     $.post(
         API_PATH + "upload-answer",
         {
@@ -116,7 +125,6 @@ function next_question(){
             }
         }
     )
-
 }
 
 function search_database(type) {

@@ -9,96 +9,126 @@
 
 
         <div class="col-xs-12 col-md-8">
-        <div class="col-xs-12 col-sm-12 mb-4">
-            {% if type == "symptom"%}
-                <h4 id="q_{{ disease.id }}" class="question-head">Q: What symptoms does "{{ disease }}" have? </h4>
-            {% endif %}
-            {% if type == "property" %}
-                <h4 id="q_{{ symptom.id }}" class="question-head">Q: What properties does "{{ symptom.symptom_name }}" have? </h4>
-            {% endif %}
-            {% if type == "value" %}
-                <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">Q: What values does "{{ property }}" have in {{ disease.name }}? </h4>
-	            <p>Please add the unit (days, minutes, degree Celsius) </p>
-            {% endif %}
+
+	        <div class="col-xs-12 col-sm-12 mb-4">
+	            {% if type == "symptom"%}
+	                <h4 id="q_{{ disease.id }}" class="question-head">Q: What symptoms does <span class="badge badge-secondary">disease</span> "{{ disease }}" have? </h4>
+	            {% endif %}
+	            {% if type == "symptom-valid"%}
+	                <h4 id="q_{{ disease.id }}" class="question-head">Q: Does <span class="badge badge-secondary">disease</span> "{{ disease }}" have <span class="badge badge-secondary">symptom</span> <span id="a_{{ symptom.id }}" class="valid-word"> {{ symptom }} </span>? </h4>
+	            {% endif %}
+	            {% if type == "property" %}
+	                <h4 id="q_{{ symptom.id }}" class="question-head">Q: What properties does <span class="badge badge-secondary">symptom</span> "{{ symptom.symptom_name }}" have? </h4>
+	            {% endif %}
+	            {% if type == "property-valid" %}
+	                <h4 id="q_{{ symptom.id }}" class="question-head">Q: Does <span class="badge badge-secondary">symptom</span> "{{ symptom.symptom_name }}" have <span class="badge badge-secondary">property</span> <span id="a_{{ property.id }}" class="valid-word"> {{ property }} </span> ? </h4>
+	            {% endif %}
+	            {% if type == "value" %}
+	                <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">Q: What values does <span class="badge badge-secondary">property</span> "{{ property }}" have in <span class="badge badge-secondary">disease</span> {{ disease.name }}? </h4>
+		            <p>Please add the unit (days, minutes, degree Celsius) </p>
+	            {% endif %}
+	            {% if type == "value-valid" %}
+		            <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">
+			            Q: Does <span class="badge badge-secondary">property</span> "{{ property }}" have  <span class="badge badge-secondary">value</span> <span id="a_{{ symptom.id }}" class="valid-word"> {{ value }} </span> in {{ disease.name }}?
+		            </h4>
+	            {% endif %}
+	        </div>
+
+	        {% if type == "symptom" %}
+	        <div class="col-xs-12 col-sm-12 mb-4 ans-list">
+	            {% if symptoms %}
+	                 {% for symptom in symptoms %}
+	                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.id }}">{{ symptom.symptom_name }}</button>
+	                {% endfor %}
+	                <p>or more?</p>
+	            {% endif %}
+	            {% if not symptoms %}
+	                <p> Please input to search other symptoms...</p>
+	            {% endif %}
+	        </div>
+	        {% endif %}
+
+	        {% if type == "property" %}
+	        <div class="col-xs-12 col-sm-12 mb-4 ans-list">
+	            {% if properties %}
+	                 {% for property in properties %}
+	                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ property.id }}">{{ property.property_describe }}</button>
+	                {% endfor %}
+	                <p>or more?</p>
+	            {% endif %}
+	            {% if not properties %}
+	                <p> Please input to search other properties ... if there is not, you can  add more</p>
+	            {% endif %}
+	        </div>
+	        {% endif %}
+
+	        {% if type == "value" %}
+	        <div class="col-xs-12 col-sm-12 mb-4 ans-list">
+	            {% if values %}
+	                 {% for value in values %}
+	                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ value.id }}">{{ value.value_detail }}</button>
+	                {% endfor %}
+	                <p>or more?</p>
+	            {% endif %}
+	            {% if not values %}
+	                <p> Please input to <b>add</b> values</p>
+	            {% endif %}
+	        </div>
+	        {% endif %}
+
+			{% if "valid" in type %}
+
+	        <div class="col-xs-10 col-sm-10  mb-4">
+				<div class="agree-div">
+			        <button class="btn btn-outline-success  agree mr-2" value="True" onclick="next_question(this)">Yes</button>
+			        <button class="btn btn-outline-dark disagree ml-2" value="False" onclick="next_question(this)">No</button>
+					<button class="btn btn-outline-secondary disagree ml-2" onclick="location.reload()">Jump</button>
+				</div>
+	        </div>
+
+	        {% else %}
+
+	        <div class="input-group col-xs-10 col-sm-10 mb-4">
+			{#  <input type="text" class="form-control" id="input-disease" oninput="search_UMLS()">#}
+		        <input type="text" class="form-control" id="input-disease" oninput="search_database('{{ type }}')">
+
+	            <div class="input-group-append">
+	                <button class="btn btn-outline-secondary" type="button" onclick="add_symptom()">Add</button>
+	            </div>
+	        </div>
+
+	        <div class="col-xs-12 col-sm-12 mb-4">
+	            <p>You might want to search the term below?</p>
+	            <p class="" id="api-response">
+	                {{ response }}
+	            </p>
+	        </div>
+
+			<div class="col-xs-10 col-sm-10  mb-4">
+		        <button class="btn btn-dark" type="button" onclick="next_question()">Next</button>
+		        <button class="btn btn-outline-secondary" onclick="location.reload()">Jump</button>
+			</div>
+
+			{% endif %}
 
         </div>
-
-        {% if type == "symptom" %}
-        <div class="col-xs-12 col-sm-12 mb-4 ans-list">
-            {% if symptoms %}
-                 {% for symptom in symptoms %}
-                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.id }}">{{ symptom.symptom_name }}</button>
-                {% endfor %}
-                <p>or more?</p>
-            {% endif %}
-            {% if not symptoms %}
-                <p> Please input to search other symptoms...</p>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        {% if type == "property" %}
-        <div class="col-xs-12 col-sm-12 mb-4 ans-list">
-            {% if properties %}
-                 {% for property in properties %}
-                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ property.id }}">{{ property.property_describe }}</button>
-                {% endfor %}
-                <p>or more?</p>
-            {% endif %}
-            {% if not properties %}
-                <p> Please input to search other properties ... if there is not, you can  add more</p>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        {% if type == "value" %}
-        <div class="col-xs-12 col-sm-12 mb-4 ans-list">
-            {% if values %}
-                 {% for value in values %}
-                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ value.id }}">{{ value.value_detail }}</button>
-                {% endfor %}
-                <p>or more?</p>
-            {% endif %}
-            {% if not values %}
-                <p> Please input to <b>add</b> values</p>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <div class="input-group col-xs-10 col-sm-10 mb-4">
-{#            <input type="text" class="form-control" id="input-disease" oninput="search_UMLS()">#}
-	        <input type="text" class="form-control" id="input-disease" oninput="search_database('{{ type }}')">
-
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" onclick="add_symptom()">Add</button>
-            </div>
-        </div>
-
-        <div class="col-xs-12 col-sm-12 mb-4">
-            <p>You might want to search the term below?</p>
-            <p class="" id="api-response">
-                {{ response }}
-            </p>
-        </div>
-
-        </div>
-
 
         <div class="col-xs-12 col-md-4 pl-1 pr-1">
 
-        <div class="pl-2 mb-1" style="font-size: small;border-left:solid .25rem;border-left-color: #f0ad4e;">
-            <span class="badge badge-secondary">Help</span>
-            The meaning of
-            <b>{{ disease.name }}</b> is:
-            <p id="disease-def">
+	        <div class="pl-2 mb-1" style="font-size: small;border-left:solid .25rem;border-left-color: #f0ad4e;">
+	            <span class="badge badge-secondary">Help</span>
+	            The meaning of
+	            <b>{{ disease.name }}</b> is:
+	            <p id="disease-def">
 
-            </p>
+	            </p>
+
+	        </div>
+	        <ul class="nav selected-ans">
+
+	        </ul>
 
         </div>
-        <ul class="nav selected-ans">
-
-        </ul>
-        <button class="btn btn-dark" type="button" onclick="next_question()">Next</button>
     </div>
 
 

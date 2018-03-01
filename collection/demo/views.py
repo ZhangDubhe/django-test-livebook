@@ -7,6 +7,8 @@ from io import BytesIO
 from reportlab.pdfgen import canvas
 import json
 import random
+import time
+
 
 from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value
 from .Authentication import Authentication as auth
@@ -166,6 +168,7 @@ def user_auth(uuid):
 
 
 def quiz(request, uuid, **topic):
+	start_time = time.time()
 	# check uuid
 	try:
 		user = User.objects.get(pk=uuid)
@@ -196,22 +199,39 @@ def quiz(request, uuid, **topic):
 
 	is_symptom = DiseaseLink.objects.filter(disease_id=disease.id)
 	if is_symptom:
-
 		ran = get_random()
 		symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
-		is_property = Property.objects.filter(symptom__id=symptom.id)
 		if ran <= 1:
-			type = "symptom"
-		elif 1 < ran <= 2:
-			type = "property"
-		elif 2 < ran <= 3:
+			if ran <= 0.5:
+				type = "symptom"
+			else:
+				type = "symptom-valid"
+		elif 1 < ran <= 1.5:
+			type = 'property'
+		elif 1.5 < ran <= 3:
+			is_property = Property.objects.filter(symptom__id=symptom.id)
 			if is_property:
-				type = "value"
+				if ran <= 2:
+					type = "property-valid"
+				else:
+					v_property = is_property.order_by('?')[0]
+					try:
+						val = Value.objects.get(symptom__id=symptom.id, disease__id=disease.id, property__id=v_property.id)
+						if 2.5 < ran <= 3:
+							type = "value"
+						else:
+							type = "value-valid"
+					except Value.DoesNotExist:
+						type = "value"
 			else:
 				type = "property"
 	else:
 		type = "symptom"
 
+	duration = time.time() - start_time
+	print("[ + ] ================ SENDING ================")
+	print("[ + ] type = "+type+" takes " + str(duration))
+	print("[ + ] ================ ======= ================")
 	if type == "symptom":
 		if is_symptom:
 			try:
@@ -227,27 +247,47 @@ def quiz(request, uuid, **topic):
 		symptom = None
 		v_property = None
 		v_values = None
-
+		val = None
+	elif type == "symptom-valid":
+		symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
+		properties = None
+		symptoms = None
+		v_property = None
+		v_values = None
+		val = None
 	elif type == "property":
 		symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
 		try:
 			properties = Property.objects.filter(symptom__id=symptom.id)
 		except:
 			properties = []
-
 		symptoms = None
 		v_property = None
 		v_values = None
-
+		val = None
+	elif type == "property-valid":
+		symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
+		properties = None
+		symptoms = None
+		v_property = Property.objects.filter(symptom__id=symptom.id)[0]
+		v_values = None
+		val = None
 	elif type == "value":
 		s_id = symptom.id
-		v_property = Property.objects.filter(symptom__id=s_id).order_by("?")[0]
 		try:
 			v_values = Value.objects.filter(symptom__id=s_id, disease__id=disease.id, property__id=v_property.id)
 		except:
 			v_values = None
 		properties = None
 		symptoms = None
+		val = None
+	elif type == 'value-valid':
+		symptom = symptom
+		v_property = v_property
+		val = val
+		properties = None
+		symptoms = None
+		v_values = None
 
 	#  query Tgt
 	try:
@@ -262,12 +302,15 @@ def quiz(request, uuid, **topic):
 		'user': user,
 		'para': para,
 		'type': type,
+
 		'disease': disease,
 		'symptoms': symptoms,
 		'symptom': symptom,
 		'properties': properties,
 		'property': v_property,
 		'values': v_values,
+		'value': val,
+
 		'tgt': tgt
 	})
 
@@ -298,8 +341,9 @@ def update_disease(request):
 
 def upload_answer(request):
 	if request.method == 'POST' and request.POST.get('name') == 'answer':
-		print("="*10)
-		print(request.POST.get('data'))
+		print("[ + ] ================ UPLOAD ================")
+		print("[ + ] ",request.POST.get('data'))
+		print("[ + ] ================ ====== ================")
 		data = json.loads(request.POST.get('data'))
 
 		# data.question_id = $(".question-head")[0].id.split("_")[1];
@@ -311,7 +355,6 @@ def upload_answer(request):
 		type = data["type"]
 		if type == 'symptom':
 			for each in selections:
-				print(each["id"], each["text"])
 				try:
 					dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=each["id"])
 					count_a = dl.count_agree
@@ -324,12 +367,29 @@ def upload_answer(request):
 					dl.save()
 					result = "Create log success"
 			status = 20
+		elif type == 'symptom-valid':
+			symptom_id = selections
+			try:
+				dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=symptom_id)
+				is_agree = data["is_agree"]
+				count_a = dl.count_agree
+				count_da = dl.count_disagree
+				if is_agree:
+					count_a = count_a + 1
+				else:
+					count_da = count_da + 1
+				dl.is_valid = (True , False)[count_a > count_da]
+				dl.count_agree = count_a
+				dl.count_disagree = count_da
+				dl.save()
+				result = "Update log success"
+				status = 20
+			except DiseaseLink.DoesNotExist:
+				result = "Update log failure, Please try again"
+				status = 0
 		elif type == 'property':
 			for each in selections:
-				print("id",each["id"],"name", each["text"])
 				if each["id"] == "":
-					print("[+]creating")
-					print("-"*10)
 					np = Property(symptom_id=question_id, property_describe=each["text"], count_editor=1)
 					np.save()
 					result = "Create log Success"
@@ -340,7 +400,17 @@ def upload_answer(request):
 					rp.save()
 					result = "Update log Success"
 			status = 20
-
+		elif type == 'property-valid':
+			is_agree = data["is_agree"]
+			rp = Property.objects.get(id=selections)
+			if is_agree:
+				count = rp.count_editor + 1
+			else:
+				count = rp.count_editor - 1
+			rp.count_editor = count
+			rp.save()
+			result = "Update log Success"
+			status = 20
 		elif type == "value":
 			disease_id = int(question_id.split("+")[0])
 			symptom_id = int(question_id.split("+")[1])
@@ -362,6 +432,24 @@ def upload_answer(request):
 					resist_value.save()
 					result = "Update value log Success"
 					status = 20
+		elif type == "value-valid":
+			selection_id = selections
+			try:
+				resist_value = Property.objects.get(id=selection_id)
+
+				is_agree = data["is_agree"]
+				if is_agree:
+					count = resist_value.count_editor + 1
+				else:
+					count = resist_value.count_editor - 1
+
+				resist_value.count_editor = count
+				resist_value.save()
+				result = "Update value log Success"
+				status = 20
+			except Property.DoesNotExist:
+				status = 0
+				result = "updating value log error"
 		else:
 			status = 0
 			result = "updating database error"
@@ -369,7 +457,6 @@ def upload_answer(request):
 	else:
 		status = 0
 		result = "get data error"
-
 
 	return HttpResponse(json.dumps({
 		"result": result,
@@ -470,7 +557,6 @@ def umls_auth(request):
 				status = 200
 		else:
 			result = "Please INPUT something"
-			print(result)
 		return HttpResponse(json.dumps({
 			"status": status,
 			"result": result,
