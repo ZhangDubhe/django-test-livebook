@@ -367,6 +367,7 @@ def upload_answer(request):
 					dl.save()
 					result = "Create log success"
 			status = 20
+
 		elif type == 'symptom-valid':
 			symptom_id = selections
 			try:
@@ -374,11 +375,13 @@ def upload_answer(request):
 				is_agree = data["is_agree"]
 				count_a = dl.count_agree
 				count_da = dl.count_disagree
-				if is_agree:
+				if is_agree == 'True':
 					count_a = count_a + 1
+					print('you agree')
 				else:
 					count_da = count_da + 1
-				dl.is_valid = (True , False)[count_a > count_da]
+					print('you disagree')
+				dl.is_valid = (False, True)[count_a > count_da]
 				dl.count_agree = count_a
 				dl.count_disagree = count_da
 				dl.save()
@@ -387,6 +390,7 @@ def upload_answer(request):
 			except DiseaseLink.DoesNotExist:
 				result = "Update log failure, Please try again"
 				status = 0
+
 		elif type == 'property':
 			for each in selections:
 				if each["id"] == "":
@@ -400,17 +404,21 @@ def upload_answer(request):
 					rp.save()
 					result = "Update log Success"
 			status = 20
+
 		elif type == 'property-valid':
 			is_agree = data["is_agree"]
 			rp = Property.objects.get(id=selections)
-			if is_agree:
+			if is_agree == 'True':
 				count = rp.count_editor + 1
+				print('you agree')
 			else:
 				count = rp.count_editor - 1
+				print('you disagree')
 			rp.count_editor = count
 			rp.save()
 			result = "Update log Success"
 			status = 20
+
 		elif type == "value":
 			disease_id = int(question_id.split("+")[0])
 			symptom_id = int(question_id.split("+")[1])
@@ -432,16 +440,19 @@ def upload_answer(request):
 					resist_value.save()
 					result = "Update value log Success"
 					status = 20
+
 		elif type == "value-valid":
 			selection_id = selections
 			try:
 				resist_value = Property.objects.get(id=selection_id)
 
 				is_agree = data["is_agree"]
-				if is_agree:
+				if is_agree == 'True':
 					count = resist_value.count_editor + 1
+					print('you agree')
 				else:
 					count = resist_value.count_editor - 1
+					print('you disagree')
 
 				resist_value.count_editor = count
 				resist_value.save()

@@ -152,3 +152,11 @@ Django seems like very easy, but when you have many problem in fundation knowled
 -   Fix searching terms bug.
 -   Finish introduction of paper in ECNU.[Google Docs.](https://docs.google.com/document/d/1RF6SQaXc4lnWIeAocbxibxaHCsN1jYfsc43BOIY7xz8/edit?usp=sharing)
 -   First Stay late at U of A.
+
+##### 2018/3/1
+-   Happy New Month.
+-   Met with Eleni today and I only finished the login sys of live-book case editor.
+-   Next meeting will be next Tuesday.
+-   Add new question about verification.
+-   New face of login page and register page.
+-   Admin interface of database. 

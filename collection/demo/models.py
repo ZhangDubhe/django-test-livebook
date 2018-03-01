@@ -49,7 +49,7 @@ class User(models.Model):
     add_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user_name + " log in " +  str(self.add_at)
+        return self.user_name
 
 
 class Property(models.Model):
