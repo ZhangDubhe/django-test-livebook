@@ -2,30 +2,46 @@
 
 Created  2018/1/24, 452 Athabasca Hall,U of Alberta, Edmonton Alberta
 
+#### About this Readme.md
+This file contains instruction of this project and development logs.
+
+
+#### Demo Instruction
+There are user interface  and admin interface which all powered by Django. Although user interface is more important, we also need the admin one to look through our data.
+
+You must log in the user interface first as you enter this website and there is temporarily no introduction page of this system. 
+
+Every table is established followed this document, so you can find each explanation here.
+
+
+- - -
+
+
 #### Aim:
 To develop a special-purpose case-authoring environment, to enable the collection of cases from a broader audience. Collect Information to enlarge Database Of Disease and symptom.
 
 
 #### Webpage structure
-Page
-    
-    Welcome page : describe this project information
-    Poll page
-    Quiz page
+User interface
 
-Banner Nav
-
-    Logo _ welcome page
-    Poll
-    Quiz
-    Own
-    Admin ( only admin user when log in)
-    
-User
-    
-    Login - if not admin, if student , then quiz page
+    Login - if not admin, only home page and can start do collecting and valid.
+            further more, if not admin, if student , then quiz page
             Not student, then poll page
-    admin , then admin page, but also get in other page in 
+            if admin - then show admin page link
+            
+    home - instruction of today's topic further more it's bettr to select the topic.
+    
+    quiz - Each question is randomly show from the back end  but all are in this topic.
+            Here two types of question -- the collection one, the verification one.
+            
+            Collection can search new item and add it to system, also can select some already resisted, while another one only can select Yes or No.
+            
+            Here is a " Jump " button to make my developing work more quick and it also allow people who don't know this term to jump to next one because it will not send anything to backend.
+    
+Admin interface
+    
+    There are all important tables on this page and the admin can check whether the data is right when people uploading something.
+
 
 
 
