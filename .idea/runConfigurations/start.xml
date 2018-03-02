@@ -1,0 +1,27 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="start" type="Python.DjangoServer" factoryName="Django server" show_console_on_std_out="true">
+    <output_file is_save="true" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="DJANGO_SETTINGS_MODULE" value="start" />
+      <env name="PYTHONUNBUFFERED" value="1" />
+    </envs>
+    <option name="SDK_HOME" value="G:\Program Files\Python\Python36\python.exe" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/collection" />
+    <option name="IS_MODULE_SDK" value="false" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <module name="uare" />
+    <option name="launchJavascriptDebuger" value="true" />
+    <option name="port" value="8000" />
+    <option name="host" value="localhost" />
+    <option name="additionalOptions" value="" />
+    <option name="browserUrl" value="http://localhost:8000/" />
+    <option name="runTestServer" value="true" />
+    <option name="runNoReload" value="false" />
+    <option name="useCustomRunCommand" value="false" />
+    <option name="customRunCommand" value="" />
+    <method />
+  </configuration>
+</component>

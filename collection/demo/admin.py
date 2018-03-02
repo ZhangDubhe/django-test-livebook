@@ -8,7 +8,7 @@ from .models import Disease, Symptom, DiseaseLink, User, UserLog, Property, Valu
 class UserAdmin(admin.ModelAdmin):
 	fieldsets = [
 		('User', {'fields': ['user_name']}),
-		('User information', {'fields': ['user_email', 'user_organization', 'is_related', 'is_doctor', 'user_password'], 'classes': ['collapse']}),
+		('User information', {'fields': ['user_email', 'user_organization', 'is_related', 'is_doctor', 'is_admin', 'user_password'], 'classes': ['collapse']}),
 	]
 	list_display = ('user_name', 'user_email', 'user_organization', 'is_related', 'is_doctor', 'add_at', 'user_password', 'is_admin')
 
