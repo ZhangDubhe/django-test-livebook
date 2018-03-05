@@ -19,6 +19,7 @@ def auth_error(request, result):
 		'other': result
 	})
 
+
 def register(request):
 	status = 0
 	if request.method == "POST":
@@ -83,6 +84,7 @@ def register(request):
 			'other': results
 		})
 
+
 def login(request):
 	status = 0
 	if request.method == "POST":
@@ -115,26 +117,29 @@ def login(request):
 			'other': msg
 		})
 
+
 def logout(request):
 	return render(request, 'registration/logout.html', {
 
 	})
+
 
 def password_change(request):
 	return render(request, 'registration/logout.html', {
 
 	})
 
+
 def init_login(request):
 	return render(request, 'registration/login.html', {
 		'title': 'Login'
 	})
 
+
 def init_register(request):
 	return render(request, 'registration/register.html', {
 		'title': 'Register'
 	})
-
 
 
 def index(request):
@@ -151,9 +156,6 @@ def index(request):
 
 def get_random():
 	return random.uniform(0, 3)
-
-
-#   1,2,3,4
 
 
 def user_auth(uuid):

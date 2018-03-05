@@ -34,6 +34,16 @@ function get_def_umls(cui) {
 
 function add_symptom(){
     var text = $("#input-disease").val();
+    var $ans_list = $(".selected-ans .ans-btn");
+    if($ans_list.length > 0) {
+    	for ( var i=0; i < $ans_list.length; i++){
+			console.log(text, " ? = ", $ans_list[i].innerText )
+			if(text.toLowerCase() == $ans_list[i].innerText.toLowerCase()){
+				layer.msg("Please select or input different term.");
+			    return
+			}
+	    }
+    };
     $(".selected-ans").append("<button class='btn btn-info mr-2 mb-2 ans-btn' >"+ text +"</button>");
 }
 
@@ -196,6 +206,16 @@ function searchResult() {
         var  text = $(this).children(".search-result-text").text();
         var  cui = $(this).attr("id");
         console.log(cui);
+        var $ans_list = $(".selected-ans .ans-btn");
+        if($ans_list.length > 0) {
+            for ( var i=0; i < $ans_list.length; i++){
+                console.log(text, " ? = ", $ans_list[i].innerText )
+                if(text.toLowerCase() == $ans_list[i].innerText.toLowerCase()){
+                    layer.msg("Please select or input different term.");
+                    return
+                }
+            }
+        };
         $(".selected-ans").append("<button id='"+cui+"' class='btn btn-info mr-2 mb-2 ans-btn'>"+ text +"</button>");
         $(this).css("background-color","#fafafa");
     })
