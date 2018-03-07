@@ -54,14 +54,14 @@ class ValueAdmin(admin.ModelAdmin):
 
 
 class UserLogAdmin(admin.ModelAdmin):
-	list_display = ('id','user', 'value', 'get_disease_name', 'get_symptom_name', 'property', 'add_at')
+	list_display = ('id', 'user', 'value', 'get_disease_name', 'get_symptom_name', 'property', 'add_at')
 
 	def get_symptom_name(self, obj):
 		return obj.diseaselink.symptom
 	get_symptom_name.short_description = 'Symptom'
 
 	def get_disease_name(self, obj):
-		return obj.diseaselink.disease
+		return obj.disease_link.disease
 	get_disease_name.short_description = 'Disease'
 
 

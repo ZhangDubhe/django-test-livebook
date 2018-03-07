@@ -657,9 +657,10 @@ def document(request):
 
 
 def createLog(uuid, type, item_id):
+	print("Creating log---")
 	if 'symptom' in type:
 		try:
-			log = UserLog(user_id=uuid,disease_link=item_id)
+			log = UserLog(user_id=uuid,disease_link_id=item_id)
 			log.save()
 			print('create log success')
 		except UserLog.DoesNotExist:
@@ -667,7 +668,7 @@ def createLog(uuid, type, item_id):
 			pass
 	elif 'property' in type:
 		try:
-			log = UserLog(user_id=uuid,property=item_id)
+			log = UserLog(user_id=uuid,property_id=item_id)
 			log.save()
 			print('create log success')
 		except UserLog.DoesNotExist:
@@ -675,7 +676,7 @@ def createLog(uuid, type, item_id):
 			pass
 	elif 'value' in type:
 		try:
-			log = UserLog(user_id=uuid,tvalue=item_id)
+			log = UserLog(user_id=uuid,tvalue_id=item_id)
 			log.save()
 			print('create log success')
 		except UserLog.DoesNotExist:
