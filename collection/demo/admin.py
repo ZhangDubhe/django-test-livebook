@@ -57,7 +57,7 @@ class UserLogAdmin(admin.ModelAdmin):
 	list_display = ('id', 'user', 'value', 'get_disease_name', 'get_symptom_name', 'property', 'add_at')
 
 	def get_symptom_name(self, obj):
-		return obj.diseaselink.symptom
+		return obj.disease_link.symptom
 	get_symptom_name.short_description = 'Symptom'
 
 	def get_disease_name(self, obj):

@@ -676,7 +676,7 @@ def createLog(uuid, type, item_id):
 			pass
 	elif 'value' in type:
 		try:
-			log = UserLog(user_id=uuid,tvalue_id=item_id)
+			log = UserLog(user_id=uuid,value_id=item_id)
 			log.save()
 			print('create log success')
 		except UserLog.DoesNotExist:

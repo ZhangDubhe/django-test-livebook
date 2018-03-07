@@ -99,10 +99,10 @@ class DiseaseLink(models.Model):
 
 
 class UserLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    value = models.ForeignKey(Value, on_delete=models.CASCADE,  blank=True, default=0)
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, blank=True, default=0)
-    disease_link = models.ForeignKey(DiseaseLink, on_delete=models.CASCADE, blank=True, default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, default=1)
+    value = models.ForeignKey(Value, on_delete=models.CASCADE,unique=False,  blank=True, null=True)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE,unique=False, blank=True,null=True)
+    disease_link = models.ForeignKey(DiseaseLink, on_delete=models.CASCADE, unique=False,blank=True,null=True)
     add_at = models.DateTimeField('createdAt', auto_now_add=True)
 
     def __str__(self):
