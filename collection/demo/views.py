@@ -268,7 +268,6 @@ def quiz(request, uuid, **topic):
 		v_values = None
 		val = None
 	elif type == "property-valid":
-		symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
 		properties = None
 		symptoms = None
 		v_property = Property.objects.filter(symptom__id=symptom.id)[0]
@@ -312,7 +311,7 @@ def quiz(request, uuid, **topic):
 		'property': v_property,
 		'values': v_values,
 		'value': val,
-
+		'defination':'Some definations',
 		'tgt': tgt
 	})
 

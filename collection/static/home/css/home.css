@@ -10,6 +10,13 @@
     border-radius: 0;
     width: 100%;
     text-align: left;
+    padding:0.1rem;
+}
+.question-head{
+    line-height: 1.7;
+}
+#api-response>p{
+    margin-bottom: 0.3rem;
 }
 #api-response .btn:hover{
     background-color: #fafafa;
@@ -18,9 +25,9 @@
     background-color: #28a745ba;
     font-weight: 600;
     color: #fff;
-    line-height: 2;
+    line-height: 1.2;
     border-radius: 3rem;
-    padding: 0 0.6rem 0.4rem 0.6rem;
+    padding: 0 0.3rem 0.2rem 0.3rem;
     display: inline-block;
 }
 .agree-div{
