@@ -348,6 +348,7 @@ def upload_answer(request):
 		print("[ + ] ================ ====== ================")
 		data = json.loads(request.POST.get('data'))
 
+
 		# data.question_id = $(".question-head")[0].id.split("_")[1];
 		# data.selections = select_info;
 		# {ans.id , ans.text};
@@ -355,6 +356,8 @@ def upload_answer(request):
 		question_id = data["question_id"]
 		selections = data["selections"]
 		type = data["type"]
+		uuid = data["uuid"]
+
 		if type == 'symptom':
 			for each in selections:
 				try:
@@ -363,11 +366,13 @@ def upload_answer(request):
 					dl.count_agree = count_a + 1
 					dl.save()
 					result = "Update log success"
+					createLog(uuid=uuid, type=type, item_id=dl.id)
 				except:
 					dl = DiseaseLink(disease_id=question_id, symptom_id=each["id"], count_agree=1, count_disagree=0,
 					                 is_valid=True)
 					dl.save()
 					result = "Create log success"
+					createLog(uuid=uuid, type=type, item_id=dl.id)
 			status = 20
 
 		elif type == 'symptom-valid':
@@ -389,6 +394,7 @@ def upload_answer(request):
 				dl.save()
 				result = "Update log success"
 				status = 20
+				createLog(uuid=uuid, type=type, item_id=dl.id)
 			except DiseaseLink.DoesNotExist:
 				result = "Update log failure, Please try again"
 				status = 0
@@ -399,17 +405,20 @@ def upload_answer(request):
 					np = Property(symptom_id=question_id, property_describe=each["text"], count_editor=1)
 					np.save()
 					result = "Create log Success"
+					createLog(uuid=uuid, type=type, item_id=np.id)
 				else:
 					rp = Property.objects.get(id=each["id"])
 					count = rp.count_editor + 1
 					rp.count_editor = count
 					rp.save()
 					result = "Update log Success"
+					createLog(uuid=uuid, type=type, item_id=np.id)
 			status = 20
 
 		elif type == 'property-valid':
 			is_agree = data["is_agree"]
 			rp = Property.objects.get(id=selections)
+
 			if is_agree == 'True':
 				count = rp.count_editor + 1
 				print('you agree')
@@ -420,6 +429,7 @@ def upload_answer(request):
 			rp.save()
 			result = "Update log Success"
 			status = 20
+			createLog(uuid=uuid, type=type, item_id=rp.id)
 
 		elif type == "value":
 			disease_id = int(question_id.split("+")[0])
@@ -432,6 +442,7 @@ def upload_answer(request):
 						new_v.save()
 						result = "Create value log success"
 						status = 20
+						createLog(uuid=uuid, type=type, item_id=new_v.id)
 					except:
 						result = "Create Error. Please Try Again"
 						status = 0
@@ -442,6 +453,7 @@ def upload_answer(request):
 					resist_value.save()
 					result = "Update value log Success"
 					status = 20
+					createLog(uuid=uuid, type=type, item_id=resist_value.id)
 
 		elif type == "value-valid":
 			selection_id = selections
@@ -460,6 +472,7 @@ def upload_answer(request):
 				resist_value.save()
 				result = "Update value log Success"
 				status = 20
+				createLog(uuid=uuid, type=type, item_id=resist_value.id)
 			except Property.DoesNotExist:
 				status = 0
 				result = "updating value log error"
@@ -641,3 +654,30 @@ def document(request):
 	buffer.close()
 	response.write(pdf)
 	return response
+
+
+def createLog(uuid, type, item_id):
+	if 'symptom' in type:
+		try:
+			log = UserLog(user_id=uuid,disease_link=item_id)
+			log.save()
+			print('create log success')
+		except UserLog.DoesNotExist:
+			print('create log failure')
+			pass
+	elif 'property' in type:
+		try:
+			log = UserLog(user_id=uuid,property=item_id)
+			log.save()
+			print('create log success')
+		except UserLog.DoesNotExist:
+			print('create log failure')
+			pass
+	elif 'value' in type:
+		try:
+			log = UserLog(user_id=uuid,tvalue=item_id)
+			log.save()
+			print('create log success')
+		except UserLog.DoesNotExist:
+			print('create log failure')
+			pass

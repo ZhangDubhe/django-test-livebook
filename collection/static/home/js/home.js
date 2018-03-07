@@ -115,16 +115,17 @@ function next_question(obj){
 	    data["selections"] = select_info;
     }
     data["type"] = type;
+    data["uuid"] = session.uuid;
     data["question_id"] = $(".question-head")[0].id.split("_")[1];
     console.log(data);
     data = JSON.stringify(data);
-	
+
     $.post(
         API_PATH + "upload-answer",
         {
             name:"answer",
             csrfmiddlewaretoken:CSRFTOKEN,
-            data:data,
+            data:data
         },function (res) {
             res = JSON.parse(res);
             if(res.status == 20){
