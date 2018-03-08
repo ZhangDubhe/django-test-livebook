@@ -163,14 +163,6 @@ def quiz(request, uuid, **topic):
 	# check uuid
 	try:
 		user = User.objects.get(pk=uuid)
-		if user.is_doctor:
-			pass
-		else:
-			return render(request, 'home/index.html', {
-				'content': "Your have no such permission",
-				'title': 'Auth Error',
-				'username': user.user_name
-			})
 	except User.DoesNotExist:
 		return render(request, 'home/index.html', {
 			'content': "No this user",
@@ -337,11 +329,6 @@ def upload_answer(request):
 		print("[ + ] ================ ====== ================")
 		data = json.loads(request.POST.get('data'))
 
-
-		# data.question_id = $(".question-head")[0].id.split("_")[1];
-		# data.selections = select_info;
-		# {ans.id , ans.text};
-		# data.type = type;
 		question_id = data["question_id"]
 		selections = data["selections"]
 		type = data["type"]

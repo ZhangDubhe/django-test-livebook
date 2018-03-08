@@ -89,20 +89,28 @@ function after_add() {
     });
 }
 
-function next_question(obj){
+function next_question(){
     var type = session.type;
     var data = {};
     if(type.indexOf('valid')>0){
     	var ans = $(".valid-word").attr('id');
     	data["selections"] = parseInt(ans.split("_")[1]);
-    	data["is_agree"] = $(obj).attr("value");
+        if($('.agree-div .active').text().length>1){
+    	    data["is_agree"] = $('.agree-div .active').attr("value");
+	    }else{
+            console.log('skip');
+	        location.reload();
+	        return
+        }
     }
+    
     else{
 	    var $select_btns = $(".selected-ans button");
 	    var select_info = [];
 	
-	    if($select_btns.length === 0){
-	        layer.msg("Please select correct answers or add new one.");
+	    if($select_btns.length == 0){
+            console.log('skip');
+	        location.reload();
 	        return
 	    }
 	    for(var i = 0; i < $select_btns.length; i++){

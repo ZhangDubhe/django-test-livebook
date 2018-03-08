@@ -9,7 +9,14 @@ $(function () {
         // search_database();
     });
 
-
+    $(".agree-div button").click(function () {
+        $('.agree').removeClass('btn-secondary').addClass('btn-outline-secondary');
+        $('.agree').removeClass('active');
+        $('.disagree').removeClass('btn-secondary').addClass('btn-outline-secondary');
+        $('.disagree').removeClass('active');
+        $(this).removeClass('btn-outline-secondary').addClass('btn-secondary');
+        $(this).addClass('active');
+    })
 })
 
 
