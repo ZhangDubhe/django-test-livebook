@@ -182,3 +182,4 @@ Django seems like very easy, but when you have many problem in fundation knowled
 -   Interface need change a lot. Less thinking makes work worse.
 -   user log to suggest people how many question they finish.
 -   clean up the multiple definition entries. It's so weird.
+-   Add data from UMLS-NCI database to get definition. (Including disease only with otitis, symptoms with semantic type is symptom, property with Organism Attribute and qualitative concept)
