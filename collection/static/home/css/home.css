@@ -18,6 +18,10 @@
 #api-response>p{
     margin-bottom: 0.3rem;
 }
+#api-response .def{
+    font-size: 70%;
+    color: #5d5d5d;
+}
 #api-response .btn:hover{
     background-color: #fafafa;
 }

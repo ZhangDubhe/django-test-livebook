@@ -10,7 +10,7 @@ import random
 import time
 
 
-from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value
+from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value, Term
 from .Authentication import Authentication as auth
 
 def auth_error(request, result):
@@ -290,6 +290,7 @@ def quiz(request, uuid, **topic):
 		symptoms = None
 		v_values = None
 
+	defination = Term.objects.get(concept_identifier=disease.content_unique_id).definition
 	#  query Tgt
 	try:
 		tgt = UMLS_tgt.objects.order_by('-add_at')[0]
@@ -311,7 +312,7 @@ def quiz(request, uuid, **topic):
 		'property': v_property,
 		'values': v_values,
 		'value': val,
-		'defination':'Some definations',
+		'defination':defination,
 		'tgt': tgt
 	})
 
@@ -400,7 +401,7 @@ def upload_answer(request):
 
 		elif type == 'property':
 			for each in selections:
-				if each["id"] == "":
+				if each["id"] == "" or each["id"] == "undefined" :
 					np = Property(symptom_id=question_id, property_describe=each["text"], count_editor=1)
 					np.save()
 					result = "Create log Success"
@@ -435,7 +436,7 @@ def upload_answer(request):
 			symptom_id = int(question_id.split("+")[1])
 			property_id = int(question_id.split("+")[2])
 			for each in selections:
-				if each["id"] == "":
+				if each["id"] == "" or each["id"] == "undefined" :
 					try:
 						new_v = Value(disease_id=disease_id, symptom_id=symptom_id, property_id =property_id, count_editor= 1, value_detail=each["text"])
 						new_v.save()
@@ -490,6 +491,49 @@ def upload_answer(request):
 
 
 def search_terms(request):
+	if request.method == "GET":
+		type = request.GET.get("type")
+		str = request.GET.get("str")
+		status = 200
+
+		if type == "symptom":
+			res_list = []
+			results = Symptom.objects.filter(symptom_name__contains=str)
+			for each in results:
+				res = {}
+				defi = Term.objects.filter(concept_identifier=each.content_unique_id)[0]
+				print(defi)
+				res["name"] = each.symptom_name
+				res["id"] = each.id
+				res["source"] = defi.source
+				res["def"] = defi.definition
+				res["cui"] = defi.concept_identifier
+				res["type"] = defi.semantic_type
+				res_list.append(res)
+			results = res_list
+		elif type == "value":
+			results = "Input to add"
+			status = 0
+		else:
+			results = Term.objects.filter(name__contains=str)
+			res_list = []
+			for each in results:
+				res = {}
+				res["name"] = each.name
+				res["source"] = each.source
+				res["def"] = each.definition
+				res["cui"] = each.concept_identifier
+				res["type"] = each.semantic_type
+				res["id"] = ''
+				res_list.append(res)
+			results = res_list
+		return HttpResponse(json.dumps({
+			"results": results,
+			"status": status
+		}))
+
+
+def search_self(request):
 	if request.method == "GET":
 		type = request.GET.get("type")
 		str = request.GET.get("str")

@@ -76,7 +76,6 @@ function get_st_from_UMLS(tgt) {
         url:tgt,
         data:params,
         type:"post",
-        async:false,
         success:function (data) {
             status = 200;
             serviceTicket = data;
@@ -162,7 +161,7 @@ function load_searching(res) {
     var results = res.results;
     var result_length = results.length>6?6:results.length;
     for (var l = 0; l<result_length; l++){
-        $("#api-response").append("<p><a id='" + results[l].id +"' class='btn search-result'>"+ results[l].id +" -  <b class='search-result-text'>"+ results[l].name +"</b></a></p>");
+        $("#api-response").append("<p><a id='" + results[l].id +"' class='btn search-result'>"+ results[l].cui +" -  <b class='search-result-text'>"+ results[l].name +"</b></a></p><p class='def'>"+ results[l].type +": " +results[l].def +"</p>");
     }
     searchResult();
 }

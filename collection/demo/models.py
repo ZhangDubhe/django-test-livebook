@@ -20,6 +20,14 @@ class UMLS_st(models.Model):
         return self.ticket
 
 
+class Term(models.Model):
+    concept_identifier = models.CharField(max_length=8, null=True)
+    name = models.TextField(null=True)
+    semantic_type = models.TextField(null=True)
+    definition = models.TextField(null=True)
+    source = models.CharField(max_length=20, null=True)
+
+
 class Disease(models.Model):
     content_unique_id = models.CharField(max_length=8, null=True)
     name = models.TextField()
@@ -50,7 +58,7 @@ class User(models.Model):
 
     def __str__(self):
         return self.user_name
-
+# delete org and email
 
 class Property(models.Model):
     symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE )
@@ -107,3 +115,6 @@ class UserLog(models.Model):
 
     def __str__(self):
         return self.id
+
+
+
