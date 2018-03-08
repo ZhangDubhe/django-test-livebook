@@ -26,9 +26,6 @@ def register(request):
 		username = request.POST.get('username')
 		useremail = request.POST.get('email')
 		userpassword = request.POST.get('password')
-		organization = request.POST.get('org')
-		is_related = request.POST.get('relate')
-		is_doctor = request.POST.get('doctor')
 
 		result = 'Information not complete'
 		if username:
@@ -38,21 +35,13 @@ def register(request):
 		if useremail:
 			pass
 		else:
-			return auth_error(request,result)
+			useremail = 'null'
 		if userpassword:
 			pass
 		else:
 			return auth_error(request,result)
 
-		if is_related == "on":
-			is_related = True
-		else:
-			is_related = False
 
-		if is_doctor == "on":
-			is_doctor = True
-		else:
-			is_doctor = False
 
 		try:
 			is_resist_user = User.objects.get(user_name=username)
@@ -60,7 +49,7 @@ def register(request):
 				results = "Already have this name, please input another."
 		except User.DoesNotExist:
 			try:
-				user = User(user_name=username, user_email=useremail, user_password=userpassword,user_organization=organization,is_doctor = is_doctor, is_related = is_related, is_admin= False)
+				user = User(user_name=username, user_email=useremail, user_password=userpassword, is_admin= False)
 				user.save()
 				results = "Welcome!"
 				status = 20
