@@ -175,4 +175,10 @@ Django seems like very easy, but when you have many problem in fundation knowled
 -   Next meeting will be next Tuesday.
 -   Add new question about verification.
 -   New face of login page and register page.
--   Admin interface of database. 
+-   Admin interface of database.
+
+##### 2018/3/8
+-   After meeting with eleni, with many questions about the database to make the system did not run fluency. 
+-   Interface need change a lot. Less thinking makes work worse.
+-   user log to suggest people how many question they finish.
+-   clean up the multiple definition entries. It's so weird.
