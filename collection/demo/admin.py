@@ -57,11 +57,25 @@ class UserLogAdmin(admin.ModelAdmin):
 	list_display = ('id', 'user', 'get_disease_name', 'get_symptom_name', 'property', 'value', 'add_at')
 
 	def get_symptom_name(self, obj):
-		return obj.disease_link.symptom
+		try:
+			name = obj.disease_link.symptom
+		except:
+			try:
+				name = obj.value.symptom
+			except:
+				name = '-'
+		return name
 	get_symptom_name.short_description = 'Symptom'
 
 	def get_disease_name(self, obj):
-		return obj.disease_link.disease
+		try:
+			name = obj.disease_link.disease
+		except:
+			try:
+				name = obj.value.disease
+			except:
+				name = '-'
+		return name
 	get_disease_name.short_description = 'Disease'
 
 
