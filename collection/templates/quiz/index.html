@@ -5,7 +5,7 @@
 {% block content %}
 
 
-        <div class="col-xs-12 col-md-8">
+        <div class="col-12 col-md-8">
 
             {% if type == "symptom"%}
                 <h4 id="q_{{ disease.id }}" class="question-head">Q: What symptoms does <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease }}</span> have? </h4>
@@ -54,31 +54,17 @@
 		            Q: Does <span class="badge badge-secondary">property</span> <span class="underline">{{ property }}</span> have  <span class="badge badge-secondary">value</span> <span id="a_{{ value.id }}" class="valid-word"> "{{ value }}" </span> in {{ symptom.symptom_name }} of {{ disease.name }}?
 	            </h4>
             {% endif %}
-        </div>
 
-        <div class="col-xs-12 col-md-4 pl-3 pr-1">
 
-	        <div class="pl-2 mb-1" style="font-size: small;border-left:solid .25rem;border-left-color: #f0ad4e;">
-	            <span class="badge badge-secondary">Help</span>
+		{% if "valid" in type %}
 
-	            <b>{{ disease.name }}</b>
-	            <p id="disease-def">
-					{{ defination }}
-	            </p>
-
-	        </div>
-
-        </div>
-
-			{% if "valid" in type %}
-
-	        <div class="col-xs-12 col-sm-8 mb-4 agree-div">
+	        <div class="col-12 col-sm-12 mt-4 mb-4 agree-div">
 		        <button class="btn btn-outline-secondary  agree" value="True" onclick="">Yes</button>
 		        <button class="btn btn-outline-secondary disagree" value="False" onclick="">No</button>
 	        </div>
 
 	        {% else %}
-			<div class="col-xs-12 col-sm-8 mb-4">
+			<div class="col-12 col-sm-12 mt-4 mb-4">
 				{#  <input type="text" class="form-control" id="input-disease" oninput="search_UMLS()">#}
 				<div class="input-group">
 			        <input type="text" class="form-control" id="input-disease" oninput="search_database('{{ type }}')">
@@ -93,24 +79,38 @@
 
 
 
+	        <div class="col-12 col-md-12 pl-3 pr-1">
+		        <div class="col-xs-12 col-sm-12 mb-4">
 
-        <div class="col-xs-12 col-md-4 pl-3 pr-1">
-	        <button class="btn btn-dark" type="button" onclick="next_question()">Next question</button>
-        </div>
-
-        <div class="col-xs-12 col-md-8 pl-3 pr-1">
-	        <div class="col-xs-12 col-sm-12 mb-4">
-
-	            <p class="" id="api-response">
-	                {{ response }}
-	            </p>
+		            <p class="" id="api-response">
+		                {{ response }}
+		            </p>
+		        </div>
 	        </div>
         </div>
-        <div class="col-xs-12 col-md-4 pl-3 pr-1">
-	        <ul class="nav selected-ans">
+
+        <div class="col-12 col-md-4 pl-3 pr-1">
+
+	        <div class="pl-2 mb-1" style="font-size: small;border-left:solid .25rem;border-left-color: #f0ad4e;">
+	            <span class="badge badge-secondary">Help</span>
+
+	            <b>{{ disease.name }}</b>
+	            <p id="disease-def">
+					{{ defination }}
+	            </p>
+
+	        </div>
+
+			<button class="btn btn-dark" type="button" onclick="next_question()">Next question</button>
+
+            <ul class="nav selected-ans">
 
 	        </ul>
         </div>
+
+
+
+
 
 
     </div>
