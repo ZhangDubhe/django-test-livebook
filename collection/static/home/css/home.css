@@ -43,3 +43,7 @@
 h4 .badge {
     font-size: 55%;
 }
+th, td{
+    margin-left:0.75rem;
+    margin-right:0.75rem;
+}

@@ -388,7 +388,7 @@ def upload_answer(request):
 					rp.count_editor = count
 					rp.save()
 					result = "Update log Success"
-					createLog(uuid=uuid, type=type, item_id=np.id)
+					createLog(uuid=uuid, type=type, item_id=rp.id)
 			status = 20
 
 		elif type == 'property-valid':
@@ -701,3 +701,15 @@ def createLog(uuid, type, item_id):
 		except UserLog.DoesNotExist:
 			print('create log failure')
 			pass
+
+def user_status(request, uuid):
+	user_log = UserLog.objects.filter(user=uuid).all()
+	user = User.objects.get(id=uuid)
+	return render(request, 'home/status.html', {
+		'title': 'History',
+		'username': user.user_name,
+		'user': user,
+		'logtable': user_log
+	})
+
+

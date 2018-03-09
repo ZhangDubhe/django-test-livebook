@@ -95,19 +95,19 @@ class DiseaseLink(models.Model):
 
     def __str__(self):
         if self.is_valid:
-            valid = "is Valid"
+            valid = "Valid"
         else:
-            valid = "No valid"
-        disease_text = "Disease:"+str(self.disease.id)+" "+self.disease.name
-        symptom_text = "Symptoms:"+str(self.symptom.id)+" "+self.symptom.symptom_name
-        return disease_text+" + "+symptom_text+" - "+valid
+            valid = "Not valid"
+        disease_text = "Disease: "+self.disease.name
+        symptom_text = "Symptoms: "+self.symptom.symptom_name
+        return disease_text+" "+symptom_text+" ("+valid+")"
 
 
 class UserLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, default=1)
-    value = models.ForeignKey(Value, on_delete=models.CASCADE,unique=False,  blank=True, null=True)
-    property = models.ForeignKey(Property, on_delete=models.CASCADE,unique=False, blank=True,null=True)
     disease_link = models.ForeignKey(DiseaseLink, on_delete=models.CASCADE, unique=False,blank=True,null=True)
+    property = models.ForeignKey(Property, on_delete=models.CASCADE,unique=False, blank=True,null=True)
+    value = models.ForeignKey(Value, on_delete=models.CASCADE,unique=False,  blank=True, null=True)
     add_at = models.DateTimeField('createdAt', auto_now_add=True)
 
     def __str__(self):
