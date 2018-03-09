@@ -27,8 +27,8 @@
 #api-response .btn:hover{
     background-color: #fafafa;
 }
-.valid-word{
-
+.valid-word, .underline{
+    text-decoration: underline;
 }
 .agree-div{
     text-align: center;

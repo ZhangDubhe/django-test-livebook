@@ -8,51 +8,40 @@
         <div class="col-xs-12 col-md-8">
 
             {% if type == "symptom"%}
-                <h4 id="q_{{ disease.id }}" class="question-head">Q: What symptoms does <span class="badge badge-secondary">disease</span> "{{ disease }}" have? </h4>
+                <h4 id="q_{{ disease.id }}" class="question-head">Q: What symptoms does <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease }}</span> have? </h4>
                 <div class="ans-list">
 		            {% if symptoms %}
-			            <p>Others thinked:</p>
 		                 {% for symptom in symptoms %}
 		                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.id }}">{{ symptom.symptom_name }}</button>
 		                {% endfor %}
-		                <p>or more?</p>
 		            {% endif %}
-		            {% if not symptoms %}
-		                <p> Search and then click the result you think it is right.</p>
-		            {% endif %}
+
 		        </div>
             {% endif %}
             {% if type == "symptom-valid"%}
-                <h4 id="q_{{ disease.id }}" class="question-head">Q: Does <span class="badge badge-secondary">disease</span> "{{ disease }}" have <span class="badge badge-secondary">symptom</span> <span id="a_{{ symptom.id }}" class="valid-word"> "{{ symptom }}" </span>? </h4>
+                <h4 id="q_{{ disease.id }}" class="question-head">Q: Does <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease }}</span> have <span class="badge badge-secondary">symptom</span> <span id="a_{{ symptom.id }}" class="valid-word"> {{ symptom }} </span>? </h4>
             {% endif %}
             {% if type == "property" %}
-                <h4 id="q_{{ symptom.id }}" class="question-head">Q: What properties does <span class="badge badge-secondary">symptom</span> "{{ symptom.symptom_name }}" have? </h4>
+                <h4 id="q_{{ symptom.id }}" class="question-head">Q: What properties does <span class="badge badge-secondary">symptom</span> <span class="underline">{{ symptom }}</span> have? </h4>
 		        <div class="ans-list">
 		            {% if properties %}
-			            <p>Others thinked:</p>
 		                 {% for property in properties %}
 		                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ property.id }}">{{ property.property_describe }}</button>
 		                {% endfor %}
-		                <p>or more?</p>
 		            {% endif %}
-		            {% if not properties %}
-		                <p>1. Search and then click</p>
-		                <p>2. Input and then add</p>
-		            {% endif %}
+
 		        </div>
             {% endif %}
             {% if type == "property-valid" %}
-                <h4 id="q_{{ symptom.id }}" class="question-head">Q: Does <span class="badge badge-secondary">symptom</span> "{{ symptom.symptom_name }}" have <span class="badge badge-secondary">property</span> <span id="a_{{ property.id }}" class="valid-word"> "{{ property }}" </span> ? </h4>
+                <h4 id="q_{{ symptom.id }}" class="question-head">Q: Does <span class="badge badge-secondary">symptom</span> <span class="underline">{{ symptom.symptom_name }}</span> have <span class="badge badge-secondary">property</span> <span id="a_{{ property.id }}" class="valid-word"> <span class="underline">{{ property }}</span> </span> ? </h4>
             {% endif %}
             {% if type == "value" %}
-                <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">Q: What values does <span class="badge badge-secondary">property</span> "{{ property }}" have in <span class="badge badge-secondary">disease</span> {{ disease.name }}? </h4>
+                <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">Q: What values does <span class="badge badge-secondary">property</span> <span class="underline">{{ property }}</span> have in <span class="badge badge-secondary">symptom</span> <span class="underline">{{ symptom }}</span> of <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease.name }}</span>? </h4>
 		        <div class="ans-list">
 		            {% if values %}
 		                 {% for value in values %}
 		                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ value.id }}">{{ value.value_detail }}</button>
 		                {% endfor %}
-		                <p>or more?</p>
-			            <p >Note the unit (days, minutes, degree Celsius) </p>
 		            {% endif %}
 		            {% if not values %}
 		                <p> Please input and <b>add</b> value. Note the unit (days, minutes, degree Celsius)</p>
@@ -62,7 +51,7 @@
             {% endif %}
             {% if type == "value-valid" %}
 	            <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">
-		            Q: Does <span class="badge badge-secondary">property</span> "{{ property }}" have  <span class="badge badge-secondary">value</span> <span id="a_{{ value.id }}" class="valid-word"> "{{ value }}" </span> in {{ disease.name }}?
+		            Q: Does <span class="badge badge-secondary">property</span> <span class="underline">{{ property }}</span> have  <span class="badge badge-secondary">value</span> <span id="a_{{ value.id }}" class="valid-word"> "{{ value }}" </span> in {{ symptom.symptom_name }} of {{ disease.name }}?
 	            </h4>
             {% endif %}
         </div>
@@ -71,8 +60,8 @@
 
 	        <div class="pl-2 mb-1" style="font-size: small;border-left:solid .25rem;border-left-color: #f0ad4e;">
 	            <span class="badge badge-secondary">Help</span>
-	            The meaning of
-	            <b>{{ disease.name }}</b> is:
+
+	            <b>{{ disease.name }}</b>
 	            <p id="disease-def">
 					{{ defination }}
 	            </p>
