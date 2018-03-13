@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django.db.models import Count
 # Create your views here.
 from io import BytesIO
 from reportlab.pdfgen import canvas
@@ -705,11 +706,15 @@ def createLog(uuid, type, item_id):
 def user_status(request, uuid):
 	user_log = UserLog.objects.filter(user=uuid).all()
 	user = User.objects.get(id=uuid)
+	hotSymptom = UserLog.objects.all().values('disease_link__symptom__symptom_name').annotate(total=Count('id')).order_by('-total')[0]
+	hotDisease = UserLog.objects.all().values('disease_link__disease__name').annotate(total=Count('id')).order_by('-total')[0]
 	return render(request, 'home/status.html', {
 		'title': 'History',
 		'username': user.user_name,
 		'user': user,
-		'logtable': user_log
+		'logtable': user_log,
+		'hotSymptom': hotSymptom,
+		'hotDisease': hotDisease
 	})
 
 

@@ -57,6 +57,7 @@ class User(models.Model):
         return self.user_name
 # delete org and email
 
+
 class Property(models.Model):
     symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE )
     property_describe = models.CharField(max_length=250)

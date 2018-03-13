@@ -47,3 +47,9 @@ th, td{
     margin-left:0.75rem;
     margin-right:0.75rem;
 }
+.box{
+    padding: 2rem;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 1px 0 5px 0 #2E2D3C;
+}

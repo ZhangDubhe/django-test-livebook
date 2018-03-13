@@ -1,7 +1,11 @@
 {% extends "../base_site.html" %}
 {% load i18n static %}
 {% load render_table from django_tables2 %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "home/css/home.css" %}" />{% endblock %}
+{% block extrastyle %}{{ block.super }}
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="{% static "home/css/home.css" %}" />
+{% endblock %}
 
 {% block content %}
 
@@ -14,6 +18,19 @@
 	<div class="col-12 col-sm-12 ml-2 mr-2">
 		{% render_table logtable  %}
 	</div>
-
+	<div class="col-12 col-sm-6 box">
+		<h4>Recent most common disease word:</h4>
+		<div>
+			<p><b>{{ hotDisease.disease_link__disease__name }}</b></p>
+			<p>Sum: {{ hotDisease.total }}</p>
+		</div>
+	</div>
+	<div class="col-12 col-sm-6 box">
+		<h4>Recent most common symptom word:</h4>
+		<div>
+			<p><b>{{ hotSymptom.disease_link__symptom__symptom_name }}</b></p>
+			<p>Sum: {{ hotDisease.total }}</p>
+		</div>
+	</div>
 {% endblock %}
 
