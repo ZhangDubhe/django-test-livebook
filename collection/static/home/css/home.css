@@ -43,14 +43,16 @@
 h4 .badge {
     font-size: 55%;
 }
-th, td{
-    margin-left:0.75rem;
-    margin-right:0.75rem;
-}
-.box{
-    padding: 2rem;
+#table-content{
     border-radius: 5px;
     border: none;
-    box-shadow: 1px 0 5px 0 #2E2D3C;
-    margin:1rem;
+    box-shadow: 0 1px 2px 0 #2E2D3C;
+    padding-top: 2rem;
+}
+.box{
+    padding: 2rem 1rem;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 1px 2px 0 #2E2D3C;
+    height:auto;
 }

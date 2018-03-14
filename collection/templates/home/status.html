@@ -10,27 +10,26 @@
     {% block object-tools %}{% endblock %}
     <div class="col-12 col-sm-12 mb-4 pl-4 pr-4">
         <h4> {% blocktrans %}Hi, {{  username  }}!{% endblocktrans %}</h4>
-        <h5>Histroy</h5>
     </div>
     <br/>
-	<div class="col-12 col-sm-12 ml-2 mr-2">
+	<div id='table-content'class="col-12 col-sm-8 ml-2 mr-2">
+		<h5>History</h5>
 		{% render_table logtable  %}
 	</div>
-	<div class="col-12 col-sm-5 box">
-
-		<div>
-			<p>Recent most common disease word:</p>
+	<div class="col-12 col-sm-3">
+		<div class="box">
+			<h5>Common disease</h5>
 			<p><b>{{ hotDisease.disease_link__disease__name }}</b></p>
 			<p>Sum: {{ hotDisease.total }}</p>
 		</div>
 	</div>
-	<div class="col-12 col-sm-5 box">
 
-		<div>
-			<p>Recent most common symptom word:</p>
-			<p><b>{{ hotSymptom.disease_link__symptom__symptom_name }}</b></p>
-			<p>Sum: {{ hotDisease.total }}</p>
-		</div>
-	</div>
 {% endblock %}
+
+{% block extrascript %}
+	<script>
+		$("#table-content table").addClass('table').addClass('table-striped').addClass('table-sm').append("<caption>History of your answers.</caption>");
+	</script>
+{% endblock %}
+
 

@@ -54,7 +54,7 @@ class ValueAdmin(admin.ModelAdmin):
 
 
 class UserLogAdmin(admin.ModelAdmin):
-	list_display = ('id', 'user', 'get_disease_name', 'get_symptom_name', 'property', 'value', 'add_at')
+	list_display = ('id', 'user', 'get_disease_name', 'get_symptom_name', 'get_property', 'value', 'add_at')
 
 	def get_symptom_name(self, obj):
 		try:
@@ -63,7 +63,10 @@ class UserLogAdmin(admin.ModelAdmin):
 			try:
 				name = obj.value.symptom
 			except:
-				name = '-'
+				try:
+					name = obj.property.symptom
+				except:
+					name = '-'
 		return name
 	get_symptom_name.short_description = 'Symptom'
 
@@ -77,6 +80,17 @@ class UserLogAdmin(admin.ModelAdmin):
 				name = '-'
 		return name
 	get_disease_name.short_description = 'Disease'
+
+	def get_property(self, obj):
+		try:
+			name = obj.value.property
+		except:
+			try:
+				name = obj.property
+			except obj.property.DoesNotExist:
+				name = '-'
+		return name
+	get_property.short_description = 'Property'
 
 
 admin.site.register(Disease, DiseaseAdmin)

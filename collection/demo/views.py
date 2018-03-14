@@ -13,6 +13,7 @@ import time
 
 from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value, Term
 from .Authentication import Authentication as auth
+from .tables import SimpleTable
 
 def auth_error(request, result):
 	return render(request, 'registration/register.html', {
@@ -706,14 +707,13 @@ def createLog(uuid, type, item_id):
 def user_status(request, uuid):
 	user_log = UserLog.objects.filter(user=uuid).all()
 	user = User.objects.get(id=uuid)
-	hotSymptom = UserLog.objects.all().values('disease_link__symptom__symptom_name').annotate(total=Count('id')).order_by('-total')[0]
+
 	hotDisease = UserLog.objects.all().values('disease_link__disease__name').annotate(total=Count('id')).order_by('-total')[0]
 	return render(request, 'home/status.html', {
 		'title': 'History',
 		'username': user.user_name,
 		'user': user,
 		'logtable': user_log,
-		'hotSymptom': hotSymptom,
 		'hotDisease': hotDisease
 	})
 

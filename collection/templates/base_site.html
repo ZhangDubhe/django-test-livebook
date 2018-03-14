@@ -8,7 +8,7 @@
 			{% if user.is_admin %}
 				<a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
 			{% endif %}
-			<a class="nav-link" href="{% url 'status' user.id %}">Status</a>
+			<a class="nav-link" href="{% url 'status' user.id %}">History</a>
 			<a class="nav-link" href="{% url 'quiz' user.id %}">Question</a>
 			<a class="nav-link" >{{ user.user_name }}</a>/
 			<a class="nav-link" href="{% url 'login' %}" onclick="logout()">Logout</a>
