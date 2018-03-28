@@ -43,8 +43,6 @@ def register(request):
 		else:
 			return auth_error(request,result)
 
-
-
 		try:
 			is_resist_user = User.objects.get(user_name=username)
 			if is_resist_user:
@@ -208,6 +206,8 @@ def quiz(request, uuid, **topic):
 							type = "value-valid"
 					except Value.DoesNotExist:
 						type = "value"
+					except Value.MultipleObjectsReturned:
+						type = "value"
 			else:
 				type = "property"
 	else:
@@ -253,7 +253,7 @@ def quiz(request, uuid, **topic):
 	elif type == "property-valid":
 		properties = None
 		symptoms = None
-		v_property = Property.objects.filter(symptom__id=symptom.id)[0]
+		v_property = Property.objects.filter(symptom__id=symptom.id).order_by("?")[0]
 		v_values = None
 		val = None
 	elif type == "value":
@@ -704,17 +704,40 @@ def createLog(uuid, type, item_id):
 			print('create log failure')
 			pass
 
+
 def user_status(request, uuid):
 	user_log = UserLog.objects.filter(user=uuid).all()
-	user = User.objects.get(id=uuid)
 
-	hotDisease = UserLog.objects.all().values('disease_link__disease__name').annotate(total=Count('id')).order_by('-total')[0]
+	user = User.objects.get(id=uuid)
+	print("[+] count:",str(user_log.values('user').annotate(tol=Count('id'))))
+	count = user_log.values('user').annotate(tol=Count('id')).order_by('tol')[0]["tol"]
+
+
+	hotDisease = UserLog.objects.filter(user=uuid).all().values('disease_link__disease__name')
+	print("[+] hotDisease:", hotDisease)
+	if hotDisease.order_by("?")[0]["disease_link__disease__name"] != None:
+		hotDisease = hotDisease.annotate(total=Count('id')).order_by('-total')[0]
+		hotDisease["name"] = hotDisease["disease_link__disease__name"]
+		print("[+ 1] and counts:", hotDisease)
+	else:
+		hotDisease = UserLog.objects.filter(user=uuid).all().values('value__disease__name')
+		hotDisease = hotDisease.annotate(total=Count('id')).order_by('-total')[0]
+		hotDisease["name"] = hotDisease["value__disease__name"]
+		print("[+ 2] and counts:", hotDisease)
+		if hotDisease["name"] == None:
+			hotDisease["name"] = "None common"
+			hotDisease["total"] = 0
+
+	from .tables import SimpleTable
+	user_log = SimpleTable(user_log)
+
 	return render(request, 'home/status.html', {
 		'title': 'History',
 		'username': user.user_name,
 		'user': user,
 		'logtable': user_log,
-		'hotDisease': hotDisease
+		'hotDisease': hotDisease,
+		'count': count
 	})
 
 
