@@ -23,9 +23,14 @@
 		</div>
 
 		<div class="box">
-			<h5>Common disease</h5>
-			<p><b>{{ hotDisease.disease_link__disease__name }}</b></p>
+		{% if hotDisease.name != 'None'%}
+			<h4>{{ hotDisease.name }}</h4>
+			<p>is the most usually you edit.</p>
 			<p>Sum: {{ hotDisease.total }}</p>
+		{% else %}
+			<h4>Unfortunately,</h4>
+			<p>There is no  the most usually you edit.</p>
+		{% endif %}
 		</div>
 	</div>
 

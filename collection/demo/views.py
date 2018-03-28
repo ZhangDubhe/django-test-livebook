@@ -15,6 +15,14 @@ from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, User
 from .Authentication import Authentication as auth
 from .tables import SimpleTable
 
+def random_int(a, b=None):
+    if b is None:
+        a, b = 0, a
+    return random.randint(a, b)
+
+def get_random():
+	return random.uniform(0, 3)
+
 def auth_error(request, result):
 	return render(request, 'registration/register.html', {
 		'title': 'Register',
@@ -141,10 +149,6 @@ def index(request):
 		'username': user_name,
 		'para': para
 	})
-
-
-def get_random():
-	return random.uniform(0, 3)
 
 
 def user_auth(uuid):
@@ -287,7 +291,7 @@ def quiz(request, uuid, **topic):
 		'user': user,
 		'para': para,
 		'type': type,
-
+		'random_int': random_int(1, 10),
 		'disease': disease,
 		'symptoms': symptoms,
 		'symptom': symptom,
@@ -346,11 +350,19 @@ def upload_answer(request):
 					result = "Update log success"
 					createLog(uuid=uuid, type=type, item_id=dl.id)
 				except:
-					dl = DiseaseLink(disease_id=question_id, symptom_id=each["id"], count_agree=1, count_disagree=0,
-					                 is_valid=True)
-					dl.save()
-					result = "Create log success"
-					createLog(uuid=uuid, type=type, item_id=dl.id)
+					try:
+						dl = DiseaseLink(disease_id=question_id, symptom_id=each["id"], count_agree=1, count_disagree=0,
+						                 is_valid=True)
+						dl.save()
+						result = "Create log success"
+						createLog(uuid=uuid, type=type, item_id=dl.id)
+					except:
+						symptom = Symptom(symptom_name=each["text"],type="Sign or Symptom")
+						symptom.save()
+						dl = DiseaseLink(disease_id=question_id, symptom_id=symptom.id, count_agree=1, count_disagree=0,is_valid=True)
+						dl.save()
+						result = "Create log success"
+						createLog(uuid=uuid, type=type, item_id=dl.id)
 			status = 20
 
 		elif type == 'symptom-valid':
@@ -366,7 +378,13 @@ def upload_answer(request):
 				else:
 					count_da = count_da + 1
 					print('you disagree')
-				dl.is_valid = (False, True)[count_a > count_da]
+				if count_a > 5 and count_da == 0:
+					dl.is_valid = True
+				else:
+					if (count_a / count_da)>= 5:
+						dl.is_valid = True
+					else:
+						dl.is_valid = False
 				dl.count_agree = count_a
 				dl.count_disagree = count_da
 				dl.save()
@@ -403,6 +421,7 @@ def upload_answer(request):
 			else:
 				count = rp.count_editor - 1
 				print('you disagree')
+			# TODO: Decide
 			rp.count_editor = count
 			rp.save()
 			result = "Update log Success"
@@ -425,7 +444,7 @@ def upload_answer(request):
 						result = "Create Error. Please Try Again"
 						status = 0
 				else:
-					resist_value = Property.objects.get(id=each["id"])
+					resist_value = Value.objects.get(id=each["id"])
 					count = resist_value.count_editor + 1
 					resist_value.count_editor = count
 					resist_value.save()
@@ -724,9 +743,10 @@ def user_status(request, uuid):
 		hotDisease = hotDisease.annotate(total=Count('id')).order_by('-total')[0]
 		hotDisease["name"] = hotDisease["value__disease__name"]
 		print("[+ 2] and counts:", hotDisease)
-		if hotDisease["name"] == None:
-			hotDisease["name"] = "None common"
-			hotDisease["total"] = 0
+	if hotDisease["name"] == None:
+		print("[+ None] and counts:", hotDisease)
+		hotDisease["name"] = "None"
+		hotDisease["total"] = 0
 
 	from .tables import SimpleTable
 	user_log = SimpleTable(user_log)

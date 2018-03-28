@@ -15,11 +15,15 @@
 		                <button class="btn btn-info mr-2 mb-2 ans-btn"  id="{{ symptom.id }}">{{ symptom.symptom_name }}</button>
 		                {% endfor %}
 		            {% endif %}
-
 		        </div>
             {% endif %}
             {% if type == "symptom-valid"%}
-                <h4 id="q_{{ disease.id }}" class="question-head">Q: Does <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease }}</span> have <span class="badge badge-secondary">symptom</span> <span id="a_{{ symptom.id }}" class="valid-word"> {{ symptom }} </span>? </h4>
+				{% if random_int >= 5 %}
+	                <h4 id="q_{{ disease.id }}" class="question-head">Q: Does <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease }}</span> have <span class="badge badge-secondary">symptom</span> <span id="a_{{ symptom.id }}" class="valid-word"> {{ symptom }} </span>? </h4>
+				{% else %}
+	                <h4 id="q_{{ disease.id }}" class="question-head">Q: Is <span class="badge badge-secondary">symptom</span> <span id="a_{{ symptom.id }}" class="valid-word"> {{ symptom }} </span> of <span class="badge badge-secondary">disease</span> <span class="underline">{{ disease }}</span>? </h4>
+				{% endif %}
+
             {% endif %}
             {% if type == "property" %}
                 <h4 id="q_{{ symptom.id }}" class="question-head">Q: What properties does <span class="badge badge-secondary">symptom</span> <span class="underline">{{ symptom }}</span> have? </h4>
@@ -50,9 +54,15 @@
 		        </div>
             {% endif %}
             {% if type == "value-valid" %}
-	            <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">
-		            Q: Does <span class="badge badge-secondary">property</span> <span class="underline">{{ property }}</span> have  <span class="badge badge-secondary">value</span> <span id="a_{{ value.id }}" class="valid-word"> "{{ value }}" </span> in {{ symptom.symptom_name }} of {{ disease.name }}?
-	            </h4>
+	            {% if random_int >= 5 %}
+		            <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">
+			            Q: Does <span class="badge badge-secondary">property</span> <span class="underline">{{ property }}</span> have  <span class="badge badge-secondary">value</span> <span id="a_{{ value.id }}" class="valid-word"> "{{ value }}" </span> in {{ symptom.symptom_name }} of {{ disease.name }}?
+		            </h4>
+				{% else %}
+		            <h4 id="q_{{ disease.id }}+{{ symptom.id }}+{{ property.id }}" class="question-head">
+			            Q: The value of <span class="badge badge-secondary">property</span> <span class="underline">{{ property }}</span> in {{ symptom.symptom_name }} of {{ disease.name }} is <span class="badge badge-secondary">value</span> <span id="a_{{ value.id }}" class="valid-word"> "{{ value }}" </span>, is true?
+		            </h4>
+	            {% endif %}
             {% endif %}
 
 
@@ -102,7 +112,11 @@
 	        </div>
 
 			<button class="btn btn-dark mb-2" type="button" onclick="next_question()">Next question</button>
-
+			{% if random_int >= 5 %}
+				<span>{{ random_int }}: )</span>
+			{% else %}
+				<span>{{ random_int }}: (</span>
+			{% endif %}
             <ul class="nav selected-ans">
 
 	        </ul>
