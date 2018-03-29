@@ -18,19 +18,16 @@
 	</div>
 	<div class="col-12 col-sm-3">
 		<div class="box">
-			<h5>You have finished:</h5>
-			<p>Totally <b>{{ count }}</b> questions</p>
+			<p>You have already</p>
+			<h4>finished <strong>{{ count }}</strong> questions</h4>
 		</div>
 
-		<div class="box">
-		{% if hotDisease.name != 'None'%}
-			<h4>{{ hotDisease.name }}</h4>
-			<p>is the most usually you edit.</p>
-			<p>Sum: {{ hotDisease.total }}</p>
-		{% else %}
+		<div id="common-disease" class="box">
+
+
 			<h4>Unfortunately,</h4>
 			<p>There is no  the most usually you edit.</p>
-		{% endif %}
+
 		</div>
 	</div>
 
@@ -39,6 +36,25 @@
 {% block extrascript %}
 	<script>
 		$("#table-content table").addClass('table').addClass('table-striped').addClass('table-sm').append("<caption>History of your answers.</caption>");
+		function getDiseaseMost() {
+			var diseaseSet = $("td.disease").toArray();
+			var hash = {};
+			var m = 0;
+			var disease = null;
+			diseaseSet.forEach(function (value) {
+				var el = $(value).text();
+				hash[el] === undefined ? hash[el] = 1 : (hash[el]++);
+				hash[el] >= m && (disease = el);
+			});
+			console.log(hash);
+			return {
+				"count": hash[disease],
+				"name": disease
+			}
+		}
+		var diseaseMost = getDiseaseMost();
+		$("#common-disease").html("<h4>"+ diseaseMost.name +"</h4>" +
+			"<p> you edit the most. Totally <strong>"+diseaseMost.count+"</strong> times.</p>");
 	</script>
 {% endblock %}
 

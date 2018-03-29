@@ -3,6 +3,7 @@ from django_tables2 import A
 import itertools
 from .models import UserLog, DiseaseLink, Disease, Symptom, Value
 
+
 class SimpleTable(tables.Table):
 	# ('id', 'user', 'get_disease_name', 'get_symptom_name', 'get_property', 'value', 'add_at')
 
@@ -36,7 +37,6 @@ class SimpleTable(tables.Table):
 				if record.value != None:
 					return str(record.value.symptom)
 
-
 	def render_disease(self, record):
 		# print("[Disease link]", record.disease_link)
 		try:
@@ -46,8 +46,8 @@ class SimpleTable(tables.Table):
 				name = record.value.disease
 			except:
 				name = '—'
+		# print("[Disease]", name)
 		return name
-
 
 	class Meta:
 		model = UserLog

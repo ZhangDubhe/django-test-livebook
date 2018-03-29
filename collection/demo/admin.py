@@ -22,7 +22,7 @@ class SymptomAdmin(admin.ModelAdmin):
 
 
 class PropertyAdmin(admin.ModelAdmin):
-	list_display = ('id', 'property_describe', 'symptom', 'count_editor')
+	list_display = ('id', 'property_describe', 'symptom', 'count_agree', 'count_disagree', 'is_valid')
 
 
 class DiseaseLinkAdmin(admin.ModelAdmin):
@@ -38,7 +38,7 @@ class DiseaseLinkAdmin(admin.ModelAdmin):
 
 
 class ValueAdmin(admin.ModelAdmin):
-	list_display = ('id', 'value_detail', 'get_disease_name', 'get_symptom_name', 'get_property_name', 'count_editor')
+	list_display = ('id', 'value_detail', 'get_disease_name', 'get_symptom_name', 'get_property_name', 'count_agree', 'count_disagree', 'is_valid')
 
 	def get_symptom_name(self, obj):
 		return obj.symptom.symptom_name

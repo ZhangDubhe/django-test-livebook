@@ -59,10 +59,11 @@ class User(models.Model):
 
 
 class Property(models.Model):
-    symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE )
+    symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE)
     property_describe = models.CharField(max_length=250)
-    count_editor = models.IntegerField()
-
+    count_agree = models.IntegerField()
+    count_disagree = models.IntegerField()
+    is_valid = models.BooleanField()
     def __str__(self):
         return self.property_describe
 
@@ -72,7 +73,9 @@ class Value(models.Model):
     symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE)
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     value_detail = models.CharField(max_length=250)
-    count_editor = models.IntegerField()
+    count_agree = models.IntegerField()
+    count_disagree = models.IntegerField()
+    is_valid = models.BooleanField()
     # class Meta:
     #     unique_together = ('disease', 'symptom', 'property')
 

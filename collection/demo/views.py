@@ -29,6 +29,18 @@ def auth_error(request, result):
 		'other': result
 	})
 
+def verify_count(count_a, count_da):
+	if count_da == 0:
+		if count_a > 5 :
+			return True
+		else:
+			return False
+	else:
+		if (count_a / count_da) >= 5:
+			return True
+		else:
+			return False
+
 
 def register(request):
 	status = 0
@@ -344,22 +356,22 @@ def upload_answer(request):
 			for each in selections:
 				try:
 					dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=each["id"])
-					count_a = dl.count_agree
-					dl.count_agree = count_a + 1
+					dl.is_valid = verify_count(dl.count_agree + 1, dl.count_disagree)
+					dl.count_agree = dl.count_agree + 1
 					dl.save()
 					result = "Update log success"
 					createLog(uuid=uuid, type=type, item_id=dl.id)
 				except:
 					try:
 						dl = DiseaseLink(disease_id=question_id, symptom_id=each["id"], count_agree=1, count_disagree=0,
-						                 is_valid=True)
+						                 is_valid=False)
 						dl.save()
 						result = "Create log success"
 						createLog(uuid=uuid, type=type, item_id=dl.id)
 					except:
 						symptom = Symptom(symptom_name=each["text"],type="Sign or Symptom")
 						symptom.save()
-						dl = DiseaseLink(disease_id=question_id, symptom_id=symptom.id, count_agree=1, count_disagree=0,is_valid=True)
+						dl = DiseaseLink(disease_id=question_id, symptom_id=symptom.id, count_agree=1, count_disagree=0,is_valid=False)
 						dl.save()
 						result = "Create log success"
 						createLog(uuid=uuid, type=type, item_id=dl.id)
@@ -369,24 +381,14 @@ def upload_answer(request):
 			symptom_id = selections
 			try:
 				dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=symptom_id)
-				is_agree = data["is_agree"]
-				count_a = dl.count_agree
-				count_da = dl.count_disagree
-				if is_agree == 'True':
-					count_a = count_a + 1
+				if data["is_agree"] == 'True':
+					dl.is_valid = verify_count(dl.count_agree + 1, dl.count_disagree)
+					dl.count_agree = dl.count_agree + 1
 					print('you agree')
 				else:
-					count_da = count_da + 1
+					dl.is_valid = verify_count(dl.count_agree, dl.count_disagree + 1)
+					dl.count_disagree = dl.count_disagree + 1
 					print('you disagree')
-				if count_a > 5 and count_da == 0:
-					dl.is_valid = True
-				else:
-					if (count_a / count_da)>= 5:
-						dl.is_valid = True
-					else:
-						dl.is_valid = False
-				dl.count_agree = count_a
-				dl.count_disagree = count_da
 				dl.save()
 				result = "Update log success"
 				status = 20
@@ -398,14 +400,14 @@ def upload_answer(request):
 		elif type == 'property':
 			for each in selections:
 				if each["id"] == "" or each["id"] == "undefined" :
-					np = Property(symptom_id=question_id, property_describe=each["text"], count_editor=1)
+					np = Property(symptom_id=question_id, property_describe=each["text"], count_disagree=0, count_agree=1, is_valid=False)
 					np.save()
 					result = "Create log Success"
 					createLog(uuid=uuid, type=type, item_id=np.id)
 				else:
 					rp = Property.objects.get(id=each["id"])
-					count = rp.count_editor + 1
-					rp.count_editor = count
+					rp.is_valid = verify_count(rp.count_agree + 1, rp.count_disagree)
+					rp.count_agree = rp.count_agree + 1
 					rp.save()
 					result = "Update log Success"
 					createLog(uuid=uuid, type=type, item_id=rp.id)
@@ -414,15 +416,14 @@ def upload_answer(request):
 		elif type == 'property-valid':
 			is_agree = data["is_agree"]
 			rp = Property.objects.get(id=selections)
-
-			if is_agree == 'True':
-				count = rp.count_editor + 1
+			if data["is_agree"] == 'True':
+				rp.is_valid = verify_count(rp.count_agree + 1, rp.count_disagree)
+				rp.count_agree = rp.count_agree + 1
 				print('you agree')
 			else:
-				count = rp.count_editor - 1
+				rp.is_valid = verify_count(rp.count_agree, rp.count_disagree + 1)
+				rp.count_disagree = rp.count_disagree + 1
 				print('you disagree')
-			# TODO: Decide
-			rp.count_editor = count
 			rp.save()
 			result = "Update log Success"
 			status = 20
@@ -435,7 +436,7 @@ def upload_answer(request):
 			for each in selections:
 				if each["id"] == "" or each["id"] == "undefined" :
 					try:
-						new_v = Value(disease_id=disease_id, symptom_id=symptom_id, property_id =property_id, count_editor= 1, value_detail=each["text"])
+						new_v = Value(disease_id=disease_id, symptom_id=symptom_id, property_id =property_id, count_disagree=0, count_agree=1, is_valid=False, value_detail=each["text"])
 						new_v.save()
 						result = "Create value log success"
 						status = 20
@@ -445,8 +446,8 @@ def upload_answer(request):
 						status = 0
 				else:
 					resist_value = Value.objects.get(id=each["id"])
-					count = resist_value.count_editor + 1
-					resist_value.count_editor = count
+					resist_value.is_valid = verify_count(resist_value.count_agree + 1, resist_value.count_disagree)
+					resist_value.count_agree = resist_value.count_agree + 1
 					resist_value.save()
 					result = "Update value log Success"
 					status = 20
@@ -456,16 +457,14 @@ def upload_answer(request):
 			selection_id = selections
 			try:
 				resist_value = Property.objects.get(id=selection_id)
-
-				is_agree = data["is_agree"]
-				if is_agree == 'True':
-					count = resist_value.count_editor + 1
+				if data["is_agree"] == 'True':
+					resist_value.is_valid = verify_count(resist_value.count_agree + 1, resist_value.count_disagree)
+					resist_value.count_agree = resist_value.count_agree + 1
 					print('you agree')
 				else:
-					count = resist_value.count_editor - 1
+					resist_value.is_valid = verify_count(resist_value.count_agree, resist_value.count_disagree + 1)
+					resist_value.count_disagree = resist_value.count_disagree + 1
 					print('you disagree')
-
-				resist_value.count_editor = count
 				resist_value.save()
 				result = "Update value log Success"
 				status = 20
@@ -726,37 +725,20 @@ def createLog(uuid, type, item_id):
 
 def user_status(request, uuid):
 	user_log = UserLog.objects.filter(user=uuid).all()
-
+	try:
+		count = user_log.values('user').annotate(tol=Count('id')).order_by('tol')[0]["tol"]
+	except:
+		count = '0'
+	print("[+] history count:", count)
 	user = User.objects.get(id=uuid)
-	print("[+] count:",str(user_log.values('user').annotate(tol=Count('id'))))
-	count = user_log.values('user').annotate(tol=Count('id')).order_by('tol')[0]["tol"]
-
-
-	hotDisease = UserLog.objects.filter(user=uuid).all().values('disease_link__disease__name')
-	print("[+] hotDisease:", hotDisease)
-	if hotDisease.order_by("?")[0]["disease_link__disease__name"] != None:
-		hotDisease = hotDisease.annotate(total=Count('id')).order_by('-total')[0]
-		hotDisease["name"] = hotDisease["disease_link__disease__name"]
-		print("[+ 1] and counts:", hotDisease)
-	else:
-		hotDisease = UserLog.objects.filter(user=uuid).all().values('value__disease__name')
-		hotDisease = hotDisease.annotate(total=Count('id')).order_by('-total')[0]
-		hotDisease["name"] = hotDisease["value__disease__name"]
-		print("[+ 2] and counts:", hotDisease)
-	if hotDisease["name"] == None:
-		print("[+ None] and counts:", hotDisease)
-		hotDisease["name"] = "None"
-		hotDisease["total"] = 0
 
 	from .tables import SimpleTable
 	user_log = SimpleTable(user_log)
-
 	return render(request, 'home/status.html', {
 		'title': 'History',
 		'username': user.user_name,
 		'user': user,
 		'logtable': user_log,
-		'hotDisease': hotDisease,
 		'count': count
 	})
 
