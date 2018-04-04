@@ -60,7 +60,7 @@ def createQuestion(topic, type, head_id, body_id, disease_id):
         body = Value.objects.get(id=body_id).value_detail
     if 'valid' in type:
         try:
-            question = Question(topic=topic, type=type, body=body, body_id=body_id, head=head, head_id=head_id, priority=MAX_PRIORITY, disease=disease_id)
+            question = Question(topic=topic, type=type, body=body, bodykey=body_id, head=head, headkey=head_id, priority=MAX_PRIORITY, disease=disease_id)
             question.save()
             return 0
         except Question.DoesNotExist:
@@ -395,7 +395,7 @@ def upload_answer(request):
         topic = request.session.get('topic')
         questionModelId = request.session.get('question')
         # make a flow
-        print("[update question]", topic, str(questionId))
+        print("[update question]", topic, str(questionModelId))
         if type == 'symptom':
             for each in selections:
                 try:
@@ -423,8 +423,8 @@ def upload_answer(request):
                         createLog(uuid=uuid, type=type, item_id=dl.id)
                         symptomId = symptom.id
 
-                print("Create new symptom question.")
-                createQuestion(topic=topic, type="symptom-valid", head_id=question_id, body_id=symptomId, disease_id=question_id)
+                    print("Create new symptom question.")
+                    createQuestion(topic=topic, type="symptom-valid", head_id=question_id, body_id=symptomId, disease_id=question_id)
 
             print("Update disease question.")
             updateQuestion(topic, type, questionModelId)
