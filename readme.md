@@ -131,6 +131,18 @@ if invalid:
       HTTP/1.1 403 Forbidden
        A new service ticket must be generated for each request to the API.                      
 
+### Deploy on Cybera
+####log in instance by shh key
+密钥对是用来登录您创建的实例的方式。为密钥对取一个方便您自己辨别的名字，然后在下方提供的空间内粘贴您的SSH公钥。
+可以使用 ssh-keygen 命令来生成SSH密钥对：
+```
+ssh-keygen -t rsa -f cloud.key
+```
+这将生成一对密钥对：一个私钥 (cloud.key)和一个公钥(cloud.key.pub)。请妥善保存好您的私钥，并把公钥文件内容粘贴在这里.创建实例后，您使用私钥来登录实例(登陆用户名取决您所用的镜像)：
+```
+ssh -i cloud.key <username>@<instance_ip>
+```
+[Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+Using+the+Cybera+Rapid+Access+Cloud)
 
 ## DevLog:
 * 2018/2/7 1518059603.698126

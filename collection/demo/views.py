@@ -87,6 +87,13 @@ def updateQuestion(topic, type, question_id):
     return 0
 
 
+def highPriorityQuestion(topic, type, question_id):
+    this_question = Question.objects.get(id=question_id)
+    this_question.priority = 10000
+    this_question.save()
+    return 0
+
+
 def verify_count(count_a, count_da):
     if count_da == 0:
         if count_a > 5:
@@ -446,12 +453,16 @@ def upload_answer(request):
                 result = "Update log success"
                 status = 20
                 createLog(uuid=uuid, type=type, item_id=dl.id)
+                if abs(dl.count_agree - dl.count_agree) <= 2:
+                    print("Reset symptom verify question.")
+                    highPriorityQuestion(topic, type, questionModelId)
+                else:
+                    print("Update symptom verify question.")
+                    updateQuestion(topic, type, questionModelId)
             except DiseaseLink.DoesNotExist:
                 result = "Update log failure, Please try again"
                 status = 0
 
-            print("Update symptom verify question.")
-            updateQuestion(topic, type, questionModelId)
 
         elif type == 'property':
             for each in selections:
@@ -494,9 +505,12 @@ def upload_answer(request):
             result = "Update log Success"
             status = 20
             createLog(uuid=uuid, type=type, item_id=rp.id)
-
-            print("Update property verify question.")
-            updateQuestion(topic, type, questionModelId)
+            if abs(rp.count_agree - rp.count_agree) <= 2:
+                print("Reset property verify question.")
+                highPriorityQuestion(topic, type, questionModelId)
+            else:
+                print("Update property verify question.")
+                updateQuestion(topic, type, questionModelId)
 
         elif type == "value":
             disease_id = int(question_id.split("+")[0])
@@ -547,9 +561,12 @@ def upload_answer(request):
                 result = "Update value log Success"
                 status = 20
                 createLog(uuid=uuid, type=type, item_id=resist_value.id)
-
-                print("Update value verify question.")
-                updateQuestion(topic, "value-valid", questionModelId)
+                if abs(resist_value.count_agree - resist_value.count_agree) <= 2:
+                    print("Reset symptom verify question.")
+                    highPriorityQuestion(topic, type, questionModelId)
+                else:
+                    print("Update value verify question.")
+                    updateQuestion(topic, "value-valid", questionModelId)
 
             except Property.DoesNotExist:
                 status = 0
