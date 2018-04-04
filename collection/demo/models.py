@@ -88,8 +88,8 @@ class Value(models.Model):
 
 
 class DiseaseLink(models.Model):
-	disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name='diseases', default=1)
-	symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE, related_name='diseases', default=1)
+	disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name='disease', default=1)
+	symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE, related_name='symptom', default=1)
 	count_agree = models.IntegerField()
 	count_disagree = models.IntegerField()
 	is_valid = models.BooleanField()
@@ -126,12 +126,16 @@ class Question(models.Model):
 	head = models.CharField(max_length=100)
 	headkey = models.IntegerField()
 	body = models.CharField(max_length=100)
-	bodykey = models.IntegerField()
+	bodykey = models.IntegerField(blank=True, null=True)
 	priority = models.IntegerField(default=100)
 	type = models.CharField(max_length=20)
+	topic = models.CharField(max_length=20)
+	disease = models.IntegerField(blank=True, null=True)
+	add_at = models.DateTimeField('createdAt', auto_now_add=True)
 
 	def __str__(self):
-		return "Q:" + self.head + " A:" + self.body + " p(" + self.priority + ")"
+		p_s = str(self.priority)
+		return "Q:" + str(self.head) + " A:" + str(self.body) + " - p(" + p_s + ")"
 
 	class Meta:
 		get_latest_by = "-priority"

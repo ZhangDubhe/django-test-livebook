@@ -10,10 +10,11 @@ import json
 import random
 import time
 
-from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value, Term
+from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value, Term, Question
 from .Authentication import Authentication as auth
 from .tables import SimpleTable
 
+MAX_PRIORITY = 10000
 
 def random_int(a, b=None):
     if b is None:
@@ -30,6 +31,60 @@ def auth_error(request, result):
         'title': 'Register',
         'other': result
     })
+
+
+def queueQuestion(topic):
+    firstTry = Question.objects.filter(topic=topic).order_by('-priority')[0]
+    question = Question.objects.filter(topic=topic, priority=firstTry.priority).order_by("?")[0]
+    # 10 - 10000
+    # After upload: minus 10
+    # Bigger in numeric has high priority
+    # New question
+    return question
+
+
+def createQuestion(topic, type, head_id, body_id, disease_id):
+    global MAX_PRIORITY
+    if type == "symptom-valid":
+        head = Disease.objects.get(id=head_id).name
+        body = Symptom.objects.get(id=body_id).symptom_name
+    elif type == "property":
+        head = Symptom.objects.get(id=head_id).symptom_name
+    elif type == "property-valid":
+        head = Symptom.objects.get(id=head_id).symptom_name
+        body = Property.objects.get(id=body_id).property_describe
+    elif type == "value":
+        head = Property.objects.get(id=head_id).property_describe
+    elif type == "value-valid":
+        head = Property.objects.get(id=head_id).property_describe
+        body = Value.objects.get(id=body_id).value_detail
+    if 'valid' in type:
+        try:
+            question = Question(topic=topic, type=type, body=body, body_id=body_id, head=head, head_id=head_id, priority=MAX_PRIORITY, disease=disease_id)
+            question.save()
+            return 0
+        except Question.DoesNotExist:
+            print("Error in create question")
+        except:
+            print(Question(topic=topic, type=type, body=body, body_id=body_id, head=head, head_id=head_id, priority=MAX_PRIORITY, disease=disease_id))
+            print("[ error - Valid ]")
+    else:
+        try:
+            question = Question(topic=topic, type=type, head=head, head_id=head_id, priority=MAX_PRIORITY-10,disease=disease_id)
+            question.save()
+            return 0
+        except Question.DoesNotExist:
+            print("[ error ]")
+
+
+def updateQuestion(topic, type, question_id):
+    this_question = Question.objects.get(id=question_id)
+    if 'valid' in type:
+        this_question.priority -= 10
+    else:
+        this_question.priority -= 50
+    this_question.save()
+    return 0
 
 
 def verify_count(count_a, count_da):
@@ -177,7 +232,7 @@ def user_auth(uuid):
         return False
 
 
-def quiz(request, uuid, **topic):
+def quiz(request, uuid):
     start_time = time.time()
     # check uuid
     try:
@@ -191,53 +246,20 @@ def quiz(request, uuid, **topic):
 
     para = "You might want to search the term below?"
     user_name = _(user.user_name)
+    topic = request.session.get('topic')
     if not topic:
         topic = 'Otitis'
-
-    try:
-        disease = Disease.objects.filter(concept_type=topic).order_by('?')[0]
-    except:
-        disease = "Otitis"
-
-    is_symptom = DiseaseLink.objects.filter(disease_id=disease.id)
-    if is_symptom:
-        ran = get_random()
-        symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
-        if ran <= 1:
-            if ran <= 0.5:
-                type = "symptom"
-            else:
-                type = "symptom-valid"
-        elif 1 < ran <= 1.5:
-            type = 'property'
-        elif 1.5 < ran <= 3:
-            is_property = Property.objects.filter(symptom__id=symptom.id)
-            if is_property:
-                if ran <= 2:
-                    type = "property-valid"
-                else:
-                    v_property = is_property.order_by('?')[0]
-                    try:
-                        val = Value.objects.get(symptom__id=symptom.id, disease__id=disease.id,
-                                                property__id=v_property.id)
-                        if 2.5 < ran <= 3:
-                            type = "value"
-                        else:
-                            type = "value-valid"
-                    except Value.DoesNotExist:
-                        type = "value"
-                    except Value.MultipleObjectsReturned:
-                        type = "value"
-            else:
-                type = "property"
-    else:
-        type = "symptom"
-
+    question = queueQuestion(topic)
+    request.session['topic'] = topic
+    request.session['question'] = question.id
+    type = question.type
     duration = time.time() - start_time
     print("[ + ] ================ SENDING ================")
     print("[ + ] type = " + type + " takes " + str(duration))
     print("[ + ] ================ ======= ================")
     if type == "symptom":
+        disease = Disease.objects.get(id=question.headkey)
+        is_symptom = DiseaseLink.objects.filter(disease__id=disease.id)
         if is_symptom:
             try:
                 symptoms = []
@@ -245,7 +267,7 @@ def quiz(request, uuid, **topic):
                     s_id = each.symptom_id
                     symptoms.append(Symptom.objects.get(id=s_id))
             except Symptom.DoesNotExist:
-                raise Http404("Symptoms do not exist")
+                pass
         else:
             symptoms = None
         properties = None
@@ -253,31 +275,41 @@ def quiz(request, uuid, **topic):
         v_property = None
         v_values = None
         val = None
+        defi = disease
     elif type == "symptom-valid":
-        symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
+        disease = Disease.objects.get(id=question.headkey)
+        symptom = Symptom.objects.get(id=question.bodykey)
+        defi = disease
         properties = None
         symptoms = None
         v_property = None
         v_values = None
         val = None
     elif type == "property":
-        symptom = Symptom.objects.get(id=is_symptom.order_by("?")[0].symptom_id)
+        symptom = Symptom.objects.get(id=question.headkey)
         try:
-            properties = Property.objects.filter(symptom__id=symptom.id)
+            properties = Property.objects.filter(symptom__id=question.headkey)
         except:
             properties = []
         symptoms = None
         v_property = None
         v_values = None
         val = None
+        defi = symptom
     elif type == "property-valid":
+        symptom = Symptom.objects.get(id=question.headkey)
+        v_property = Property.objects.get(id=question.bodykey)
+        defi = symptom
         properties = None
         symptoms = None
-        v_property = Property.objects.filter(symptom__id=symptom.id).order_by("?")[0]
         v_values = None
         val = None
     elif type == "value":
-        s_id = symptom.id
+        disease = Disease.objects.get(id=question.disease)
+        v_property = Property.objects.get(id=question.headkey)
+        s_id = v_property.symptom
+        print("---symptom id", s_id)
+        symptom = Symptom.objects.get(id=s_id)
         try:
             v_values = Value.objects.filter(symptom__id=s_id, disease__id=disease.id, property__id=v_property.id)
         except:
@@ -285,15 +317,20 @@ def quiz(request, uuid, **topic):
         properties = None
         symptoms = None
         val = None
+        defi = disease
     elif type == 'value-valid':
-        symptom = symptom
-        v_property = v_property
-        val = val
+        disease = Disease.objects.get(id=question.disease)
+        s_id = v_property.symptom
+        print("---symptom id", s_id)
+        symptom = Symptom.objects.get(id=s_id)
+        v_property = Property.objects.get(id=question.headkey)
+        val = Value.objects.get(id=question.bodykey)
         properties = None
         symptoms = None
         v_values = None
+        defi = disease
 
-    defination = Term.objects.get(concept_identifier=disease.content_unique_id).definition
+    defination = Term.objects.get(concept_identifier=defi.content_unique_id).definition
     #  query Tgt
     try:
         tgt = UMLS_tgt.objects.order_by('-add_at')[0]
@@ -355,7 +392,10 @@ def upload_answer(request):
         selections = data["selections"]
         type = data["type"]
         uuid = data["uuid"]
-
+        topic = request.session.get('topic')
+        questionModelId = request.session.get('question')
+        # make a flow
+        print("[update question]", topic, str(questionId))
         if type == 'symptom':
             for each in selections:
                 try:
@@ -370,16 +410,24 @@ def upload_answer(request):
                         dl = DiseaseLink(disease_id=question_id, symptom_id=each["id"], count_agree=1, count_disagree=0,
                                          is_valid=False)
                         dl.save()
-                        result = "Create log success"
+                        result = "Create  log success"
                         createLog(uuid=uuid, type=type, item_id=dl.id)
+                        symptomId = each["id"]
                     except:
                         symptom = Symptom(symptom_name=each["text"], type="Sign or Symptom")
                         symptom.save()
                         dl = DiseaseLink(disease_id=question_id, symptom_id=symptom.id, count_agree=1, count_disagree=0,
                                          is_valid=False)
                         dl.save()
-                        result = "Create log success"
+                        result = "Create new symptom log success"
                         createLog(uuid=uuid, type=type, item_id=dl.id)
+                        symptomId = symptom.id
+
+                print("Create new symptom question.")
+                createQuestion(topic=topic, type="symptom-valid", head_id=question_id, body_id=symptomId, disease_id=question_id)
+
+            print("Update disease question.")
+            updateQuestion(topic, type, questionModelId)
             status = 20
 
         elif type == 'symptom-valid':
@@ -402,6 +450,9 @@ def upload_answer(request):
                 result = "Update log failure, Please try again"
                 status = 0
 
+            print("Update symptom verify question.")
+            updateQuestion(topic, type, questionModelId)
+
         elif type == 'property':
             for each in selections:
                 if each["id"] == "" or each["id"] == "undefined":
@@ -410,6 +461,7 @@ def upload_answer(request):
                     np.save()
                     result = "Create log Success"
                     createLog(uuid=uuid, type=type, item_id=np.id)
+                    propertyId = np.id
                 else:
                     rp = Property.objects.get(id=each["id"])
                     rp.is_valid = verify_count(rp.count_agree + 1, rp.count_disagree)
@@ -417,7 +469,15 @@ def upload_answer(request):
                     rp.save()
                     result = "Update log Success"
                     createLog(uuid=uuid, type=type, item_id=rp.id)
+                    propertyId = rp.id
+
+                print("Create new property question.")
+                createQuestion(topic=topic, type="property-valid", head_id=question_id, body_id=propertyId, disease_id=null)
+
             status = 20
+
+            print("Update symptom property question.")
+            updateQuestion(topic, type, questionModelId)
 
         elif type == 'property-valid':
             is_agree = data["is_agree"]
@@ -435,6 +495,9 @@ def upload_answer(request):
             status = 20
             createLog(uuid=uuid, type=type, item_id=rp.id)
 
+            print("Update property verify question.")
+            updateQuestion(topic, type, questionModelId)
+
         elif type == "value":
             disease_id = int(question_id.split("+")[0])
             symptom_id = int(question_id.split("+")[1])
@@ -448,6 +511,8 @@ def upload_answer(request):
                         result = "Create value log success"
                         status = 20
                         createLog(uuid=uuid, type=type, item_id=new_v.id)
+                        print("Create new value question.")
+                        createQuestion(topic=topic, type="value-valid", head_id=property_id, body_id=new_v.id, disease_id=disease_id)
                     except:
                         result = "Create Error. Please Try Again"
                         status = 0
@@ -459,6 +524,12 @@ def upload_answer(request):
                     result = "Update value log Success"
                     status = 20
                     createLog(uuid=uuid, type=type, item_id=resist_value.id)
+                    valueId = resist_value.id
+                    print("Create new value question.")
+                    createQuestion(topic=topic, type="value-valid", head_id=property_id, body_id=valueId, disease_id=disease_id)
+
+            print("Update  property value question.")
+            updateQuestion(topic, "value", questionModelId)
 
         elif type == "value-valid":
             selection_id = selections
@@ -476,6 +547,10 @@ def upload_answer(request):
                 result = "Update value log Success"
                 status = 20
                 createLog(uuid=uuid, type=type, item_id=resist_value.id)
+
+                print("Update value verify question.")
+                updateQuestion(topic, "value-valid", questionModelId)
+
             except Property.DoesNotExist:
                 status = 0
                 result = "updating value log error"
@@ -505,7 +580,7 @@ def search_terms(request):
             for each in results:
                 res = {}
                 defi = Term.objects.filter(concept_identifier=each.content_unique_id)[0]
-                print(defi)
+                print("[Term]",defi.name)
                 res["name"] = each.symptom_name
                 res["id"] = each.id
                 res["source"] = defi.source
