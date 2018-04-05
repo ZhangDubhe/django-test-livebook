@@ -1,2 +1,4 @@
 # database
 db.sqlite3
+.ssh
+.DS_Store
