@@ -143,12 +143,14 @@ def register(request):
 
     if status == 20:
         user_name = _(user.user_name)
-        content = "Are you ready?"
-        para = "Today topic is about Otitis (Ear inflammation), there are around three disease in this topic. Now let's challenge."
+        topicSet = Disease.objects.values('concept_type').annotate(count=Count('id'))
+        content = "Please select one topic to begin. "
+        para = ""
         return render(request, 'home/index.html', {
             'content': content,
             'title': 'Home',
             'username': user_name,
+	        'topicSet': topicSet,
             'user': user,
             'para': para
         })
@@ -159,29 +161,40 @@ def register(request):
         })
 
 
-def login(request):
+def login(request, **uuid):
     status = 0
-    if request.method == "POST":
-        try:
-            m = User.objects.get(user_name=request.POST.get('username'))
-            if m.user_password == request.POST.get('password'):
-                msg = "You're logged in."
-                status = 20
-            else:
-                msg = "Wrong password"
-        except User.DoesNotExist:
-            msg = "Wrong user name, please register!"
-
+    if uuid:
+	    try:
+		    m = User.objects.get(id=uuid["uuid"])
+		    msg = "See you again!"
+		    status = 20
+	    except:
+		    msg = "Get user error"
+		    pass
     else:
-        msg = "Wrong request"
+	    if request.method == "POST":
+		    try:
+			    m = User.objects.get(user_name=request.POST.get('username'))
+			    if m.user_password == request.POST.get('password'):
+				    msg = "You're logged in."
+				    status = 20
+			    else:
+				    msg = "Wrong password"
+		    except User.DoesNotExist:
+			    msg = "Wrong user name, please register!"
+	    else:
+		    msg = "Wrong request"
+
     if status == 20:
         user_name = _(m.user_name)
-        content = "Are you ready?"
-        para = "Today topic is about Otitis (Ear inflammation), there are around three disease in this topic. Now let's challenge."
+        topicSet = Disease.objects.values('concept_type').annotate(count=Count('id'))
+        content = "Please select one topic to begin."
+        para = ""
         return render(request, 'home/index.html', {
             'content': content,
             'title': 'Home',
             'username': user_name,
+	        'topicSet':topicSet,
             'user': m,
             'para': para
         })
@@ -239,7 +252,7 @@ def user_auth(uuid):
         return False
 
 
-def quiz(request, uuid):
+def quiz(request, uuid ):
     start_time = time.time()
     # check uuid
     try:
@@ -255,6 +268,7 @@ def quiz(request, uuid):
     user_name = _(user.user_name)
     topic = request.session.get('topic')
     if not topic:
+        print("[ Error ]")
         topic = 'Otitis'
     question = queueQuestion(topic)
     request.session['topic'] = topic

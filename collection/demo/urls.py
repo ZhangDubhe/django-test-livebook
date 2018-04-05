@@ -6,6 +6,7 @@ urlpatterns = [
     path('home', views.index, name='index'),
     path('account/login', views.init_login, name="login"),
     path('account/login-post', views.login, name="login-post"),
+    path('account/login-post/<int:uuid>/', views.login, name="login-post-reload"),
     path('account/register', views.init_register, name="register"),
     path('account/register-post', views.register, name="register-post"),
     path('account/logout', views.logout, name="logout"),
