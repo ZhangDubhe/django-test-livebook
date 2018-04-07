@@ -12,4 +12,5 @@ function login(uuid) {
 
 function logout() {
 	session.removeItem("uuid");
+	session.removeItem("topic");
 }

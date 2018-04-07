@@ -66,11 +66,11 @@ def createQuestion(topic, type, head_id, body_id, disease_id):
         except Question.DoesNotExist:
             print("Error in create question")
         except:
-            print(Question(topic=topic, type=type, body=body, body_id=body_id, head=head, head_id=head_id, priority=MAX_PRIORITY, disease=disease_id))
+            print(Question(topic=topic, type=type, body=body, bodykey=body_id, head=head, headkey=head_id, priority=MAX_PRIORITY, disease=disease_id))
             print("[ error - Valid ]")
     else:
         try:
-            question = Question(topic=topic, type=type, head=head, head_id=head_id, priority=MAX_PRIORITY-10,disease=disease_id)
+            question = Question(topic=topic, type=type, head=head, headkey=head_id, priority=MAX_PRIORITY-10,disease=disease_id)
             question.save()
             return 0
         except Question.DoesNotExist:
@@ -79,10 +79,11 @@ def createQuestion(topic, type, head_id, body_id, disease_id):
 
 def updateQuestion(topic, type, question_id):
     this_question = Question.objects.get(id=question_id)
+    print("[ minus priority ] questionid = ",question_id)
     if 'valid' in type:
         this_question.priority -= 10
     else:
-        this_question.priority -= 50
+        this_question.priority -= 10
     this_question.save()
     return 0
 
@@ -143,12 +144,14 @@ def register(request):
 
     if status == 20:
         user_name = _(user.user_name)
-        content = "Are you ready?"
-        para = "Today topic is about Otitis (Ear inflammation), there are around three disease in this topic. Now let's challenge."
+        topicSet = Disease.objects.values('concept_type').annotate(count=Count('id'))
+        content = "Please select one topic to begin. "
+        para = ""
         return render(request, 'home/index.html', {
             'content': content,
             'title': 'Home',
             'username': user_name,
+	        'topicSet': topicSet,
             'user': user,
             'para': para
         })
@@ -159,29 +162,40 @@ def register(request):
         })
 
 
-def login(request):
+def login(request, **uuid):
     status = 0
-    if request.method == "POST":
-        try:
-            m = User.objects.get(user_name=request.POST.get('username'))
-            if m.user_password == request.POST.get('password'):
-                msg = "You're logged in."
-                status = 20
-            else:
-                msg = "Wrong password"
-        except User.DoesNotExist:
-            msg = "Wrong user name, please register!"
-
+    if uuid:
+	    try:
+		    m = User.objects.get(id=uuid["uuid"])
+		    msg = "See you again!"
+		    status = 20
+	    except:
+		    msg = "Get user error"
+		    pass
     else:
-        msg = "Wrong request"
+	    if request.method == "POST":
+		    try:
+			    m = User.objects.get(user_name=request.POST.get('username'))
+			    if m.user_password == request.POST.get('password'):
+				    msg = "You're logged in."
+				    status = 20
+			    else:
+				    msg = "Wrong password"
+		    except User.DoesNotExist:
+			    msg = "Wrong user name, please register!"
+	    else:
+		    msg = "Wrong request"
+
     if status == 20:
         user_name = _(m.user_name)
-        content = "Are you ready?"
-        para = "Today topic is about Otitis (Ear inflammation), there are around three disease in this topic. Now let's challenge."
+        topicSet = Disease.objects.values('concept_type').annotate(count=Count('id'))
+        content = "Please select one topic to begin."
+        para = ""
         return render(request, 'home/index.html', {
             'content': content,
             'title': 'Home',
             'username': user_name,
+	        'topicSet':topicSet,
             'user': m,
             'para': para
         })
@@ -239,7 +253,7 @@ def user_auth(uuid):
         return False
 
 
-def quiz(request, uuid):
+def quiz(request, uuid ):
     start_time = time.time()
     # check uuid
     try:
@@ -255,6 +269,7 @@ def quiz(request, uuid):
     user_name = _(user.user_name)
     topic = request.session.get('topic')
     if not topic:
+        print("[ Error ]")
         topic = 'Otitis'
     question = queueQuestion(topic)
     request.session['topic'] = topic
@@ -426,14 +441,16 @@ def upload_answer(request):
                         dl = DiseaseLink(disease_id=question_id, symptom_id=symptom.id, count_agree=1, count_disagree=0,
                                          is_valid=False)
                         dl.save()
-                        result = "Create new symptom log success"
+                        result = "[ Q:"+ str(questionModelId) +" ] Create new symptom log success"
                         createLog(uuid=uuid, type=type, item_id=dl.id)
                         symptomId = symptom.id
 
-                    print("Create new symptom question.")
+                    print("[ Q:"+ str(questionModelId) +" ] Create new symptom question.")
                     createQuestion(topic=topic, type="symptom-valid", head_id=question_id, body_id=symptomId, disease_id=question_id)
+                    print("[ Q:"+ str(questionModelId) +" ] Create new property question.")
+                    createQuestion(topic=topic, type="property", head_id=symptomId, body_id='', disease_id=question_id)
 
-            print("Update disease question.")
+            print("[ Q:"+ str(questionModelId) +" ] Update disease question.")
             updateQuestion(topic, type, questionModelId)
             status = 20
 
@@ -453,11 +470,11 @@ def upload_answer(request):
                 result = "Update log success"
                 status = 20
                 createLog(uuid=uuid, type=type, item_id=dl.id)
-                if abs(dl.count_agree - dl.count_agree) <= 2:
-                    print("Reset symptom verify question.")
+                if abs(dl.count_agree - dl.count_disagree) <= 1:
+                    print("[ Q:"+ str(questionModelId) +" ]Reset symptom verify question.")
                     highPriorityQuestion(topic, type, questionModelId)
                 else:
-                    print("Update symptom verify question.")
+                    print("[ Q:"+ str(questionModelId) +" ]Update symptom verify question.")
                     updateQuestion(topic, type, questionModelId)
             except DiseaseLink.DoesNotExist:
                 result = "Update log failure, Please try again"
@@ -482,12 +499,14 @@ def upload_answer(request):
                     createLog(uuid=uuid, type=type, item_id=rp.id)
                     propertyId = rp.id
 
-                print("Create new property question.")
+                print("[ Q:"+ str(questionModelId) +" ]Create new property question.")
                 createQuestion(topic=topic, type="property-valid", head_id=question_id, body_id=propertyId, disease_id=null)
+                print("[ Q:"+ str(questionModelId) +" ]Create new Value question.")
+                createQuestion(topic=topic, type="value", head_id=propertyId, body_id='', disease_id=null)
 
             status = 20
 
-            print("Update symptom property question.")
+            print("[ Q:"+ str(questionModelId) +" ]Update symptom property question.")
             updateQuestion(topic, type, questionModelId)
 
         elif type == 'property-valid':
@@ -505,11 +524,11 @@ def upload_answer(request):
             result = "Update log Success"
             status = 20
             createLog(uuid=uuid, type=type, item_id=rp.id)
-            if abs(rp.count_agree - rp.count_agree) <= 2:
-                print("Reset property verify question.")
+            if abs(rp.count_agree - rp.count_disagree) <= 2:
+                print("[ Q:"+ str(questionModelId) +" ]Reset property verify question.")
                 highPriorityQuestion(topic, type, questionModelId)
             else:
-                print("Update property verify question.")
+                print("[ Q:"+ str(questionModelId) +" ]Update property verify question.")
                 updateQuestion(topic, type, questionModelId)
 
         elif type == "value":
@@ -525,7 +544,7 @@ def upload_answer(request):
                         result = "Create value log success"
                         status = 20
                         createLog(uuid=uuid, type=type, item_id=new_v.id)
-                        print("Create new value question.")
+                        print("[ Q:"+ str(questionModelId) +" ] Create new value question.")
                         createQuestion(topic=topic, type="value-valid", head_id=property_id, body_id=new_v.id, disease_id=disease_id)
                     except:
                         result = "Create Error. Please Try Again"
@@ -539,10 +558,10 @@ def upload_answer(request):
                     status = 20
                     createLog(uuid=uuid, type=type, item_id=resist_value.id)
                     valueId = resist_value.id
-                    print("Create new value question.")
+                    print("[ Q:"+ str(questionModelId) +" ] Create new value question.")
                     createQuestion(topic=topic, type="value-valid", head_id=property_id, body_id=valueId, disease_id=disease_id)
 
-            print("Update  property value question.")
+            print("[ Q:"+ str(questionModelId) +" ] Update  property value question.")
             updateQuestion(topic, "value", questionModelId)
 
         elif type == "value-valid":
@@ -561,11 +580,11 @@ def upload_answer(request):
                 result = "Update value log Success"
                 status = 20
                 createLog(uuid=uuid, type=type, item_id=resist_value.id)
-                if abs(resist_value.count_agree - resist_value.count_agree) <= 2:
-                    print("Reset symptom verify question.")
+                if abs(resist_value.count_agree - resist_value.count_disagree) <= 2:
+                    print("[ Q:"+ str(questionModelId) +" ] Reset symptom verify question.")
                     highPriorityQuestion(topic, type, questionModelId)
                 else:
-                    print("Update value verify question.")
+                    print("[ Q:"+ str(questionModelId) +" ] Update value verify question.")
                     updateQuestion(topic, "value-valid", questionModelId)
 
             except Property.DoesNotExist:

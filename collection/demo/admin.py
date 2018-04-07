@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Disease, Symptom, DiseaseLink, User, UserLog, Property, Value
+from .models import Disease, Symptom, DiseaseLink, User, UserLog, Property, Value, Question
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -93,6 +93,10 @@ class UserLogAdmin(admin.ModelAdmin):
 	get_property.short_description = 'Property'
 
 
+class QuestionAdmin(admin.ModelAdmin):
+	list_display = ('id', 'disease', 'head', 'body', 'type', 'topic', 'add_at','priority')
+
+
 admin.site.register(Disease, DiseaseAdmin)
 admin.site.register(Symptom, SymptomAdmin)
 admin.site.register(DiseaseLink, DiseaseLinkAdmin)
@@ -100,3 +104,4 @@ admin.site.register(Value, ValueAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UserLog, UserLogAdmin)
+admin.site.register(Question, QuestionAdmin)

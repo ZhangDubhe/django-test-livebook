@@ -1,4 +1,3 @@
-
 $(function () {
 
     $(".ans-list>.ans-btn").click(function () {

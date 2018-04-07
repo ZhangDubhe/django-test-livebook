@@ -5,22 +5,51 @@
 {% block content %}
 
     {% block object-tools %}{% endblock %}
-    <div class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
-        <h4>{% trans "Hello"  %}, {% blocktrans %}{{  username  }}!{% endblocktrans %}</h4>
-        <h5>{{ content }}</h5>
-    </div>
+    <header class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
+        <h4>{% trans "Hello"  %}, <span style="text-transform: capitalize">{% blocktrans %}{{  username  }}!{% endblocktrans %}</span></h4>
+    </header>
     <br/>
-    <div class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
-        <button class="btn btn-dark" onclick="start()" > start </button>
-    </div>
-    <div class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
+
+    <section class="col-xs-12 col-sm-12 mb-4">
+        <p>{{ content }}</p>
         <p>{{ para }}</p>
+	    {% if user.user_name %}
+		<div class="col-5 mb-4">
+			<div class="list-group" id="list-tab" role="tablist">
+				{% for topic in topicSet  %}
+				<a class="list-group-item list-group-item-action" id="list-{{ topic }}" data-toggle="list" href="" onclick="session.setItem('topic', '{{ topic.concept_type }}')" role="tab">{{ topic.concept_type }} - {{ topic.count }} </a>
+				{% endfor %}
+			</div>
+		</div>
+        <p>The number is presenting the number of the disease in this topic.</p>
+
+	    {% else %}
         <p class="" id="api-response">
             {{ response }}
         </p>
-        <p>May the force be with you.</p>
+	    {% endif %}
+    </section>
+
+    <div class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
+        <button class="btn btn-dark" onclick="start()" > start </button>
     </div>
 
+{% endblock %}
+
+{% block footer %}
+	<!-- COPYRIGHT -->
+	<a href="#contact-us" onclick="$('#contact-us').show()">Contact & copyright</a>
+	<section id="contact-us" style="display: none">
+		<img src="{% static 'images/umls_tree_sm.jpg' %}" alt="umls tree logo" />
+		<span> All original disease and symptom data are provided by <a href="https://www.nlm.nih.gov/research/umls/support.html">The UMLS Terminology Services</a>. </span>
+		COPYRIGHT BY UNIVERSITY OF ALBERTA
+		<address>
+			<p>COPYRIGHT BY UNIVERSITY OF ALBERTA</p>
+			<p>Written by <a href="mailto:haotian2@ualberta.ca">Haotian Zhang</a>, Visit us at</p>
+			<p>452 Athabasca Hall, U of A </p>
+			<p>Edmonton, AB, T6G 2E8, Canada</p>
+		</address>
+	</section>
 {% endblock %}
 
 {% block extrascript %}
@@ -28,8 +57,14 @@
 		{% if user.user_name %}
 			login('{{ user.id }}');
 			console.log('{{ user.user_name }}');
+		{% else %}
+			if(parseInt(session.uuid)>0){
+				location.href = "/account/login-post/"+session.uuid;
+			}
 		{% endif %}
 		check_login();
+		session.removeItem("topic");
+
 	</script>
     <script src="{% static "home/js/home.js" %}">
     </script>

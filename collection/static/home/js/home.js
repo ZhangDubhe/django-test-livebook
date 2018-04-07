@@ -205,6 +205,10 @@ function load_UMLS_searching(res) {
 }
 
 function start(){
+	if(!session.topic){
+		layer.msg("Please choose a topic.")
+		return
+	}
     var new_url = API_PATH + 'quiz/disease/'+ session.uuid +'/';
     location.href = new_url;
 }
