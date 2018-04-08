@@ -181,71 +181,70 @@ ssh -i cloud.key <username>@<instance_ip>
 ## DevLog
 * 2018/2/7 1518059603.698126
 
-Hardly believe Eleni ask me to have a meeting with her today. While my webapp still in a begin    ning process.
-Django seems like very easy, but when you have many problem in fundation knowledge, it seems like very hard.
+    Hardly believe Eleni ask me to have a meeting with her today. While my webapp still in a begin    ning process.
+    Django seems like very easy, but when you have many problem in fundation knowledge, it seems like very hard.
+        back —— - query auth 
+                - - is_exist(tgt) - response tgt and st
+                - - is_not_exist or is_not_valid - post tgt + save
+                - - ------------------------------ response tgt and st
+        front—— - query 'search'
+                - - - check cookie 
+                - - - - isset - post st - get 'search'
+                - - - - not - - query auth
+        tgt in cookie has an expiration - 8 * 60 * 60 * 1000 (js - ms)
 
-    back —— - query auth 
-            - - is_exist(tgt) - response tgt and st
-            - - is_not_exist or is_not_valid - post tgt + save
-            - - ------------------------------ response tgt and st
-    front—— - query 'search'
-            - - - check cookie 
-            - - - - isset - post st - get 'search'
-            - - - - not - - query auth
-    tgt in cookie has an expiration - 8 * 60 * 60 * 1000 (js - ms)
-
-* 2918/2/16
--   Create topic question.
--   User can click the searching result and push.
+* 2018/2/16
+    -   Create topic question.
+    -   User can click the searching result and push.
 
 * 2018/2/22
--   Finish topic questions "Otitis".
--   Complete database and fix many bugs.
--   Simple interface with bootstrap as frontend framework.
--   Simple layout and harmonize colors.
+    -   Finish topic questions "Otitis".
+    -   Complete database and fix many bugs.
+    -   Simple interface with bootstrap as frontend framework.
+    -   Simple layout and harmonize colors.
     
 * 2018/2/23
--   Complete Login sys.
--   Fix searching terms bug.
--   Finish introduction of paper in ECNU.[Google Docs.](https://docs.google.com/document/d/1RF6SQaXc4lnWIeAocbxibxaHCsN1jYfsc43BOIY7xz8/edit?usp=sharing)
--   First Stay late at U of A.
+    -   Complete Login sys.
+    -   Fix searching terms bug.
+    -   Finish introduction of paper in ECNU.[Google Docs.](https://docs.google.com/document/d/1RF6SQaXc4lnWIeAocbxibxaHCsN1jYfsc43BOIY7xz8/edit?usp=sharing)
+    -   First Stay late at U of A.
 
 * 2018/3/1
--   Happy New Month.
--   Met with Eleni today and I only finished the login sys of live-book case editor.
--   Next meeting will be next Tuesday.
--   Add new question about verification.
--   New face of login page and register page.
--   Admin interface of database.
+    -   Happy New Month.
+    -   Met with Eleni today and I only finished the login sys of live-book case editor.
+    -   Next meeting will be next Tuesday.
+    -   Add new question about verification.
+    -   New face of login page and register page.
+    -   Admin interface of database.
 
 * 2018/3/8
--   After meeting with eleni, with many questions about the database to make the system did not run fluency. 
--   Interface need change a lot. Less thinking makes work worse.
--   user log to suggest people how many question they finish.
--   clean up the multiple definition entries. It's so weird.
--   Add data from UMLS-NCI database to get definition. (Including disease only with otitis, symptoms with semantic type is symptom, property with Organism Attribute and qualitative concept)
+    -   After meeting with eleni, with many questions about the database to make the system did not run fluency. 
+    -   Interface need change a lot. Less thinking makes work worse.
+    -   user log to suggest people how many question they finish.
+    -   clean up the multiple definition entries. It's so weird.
+    -   Add data from UMLS-NCI database to get definition. (Including disease only with otitis, symptoms with semantic type is symptom, property with Organism Attribute and qualitative concept)
 
 * 2018/3/13
--   add Class of table of history
+    -   add Class of table of history
 
 
 * 2018/3/23
--   Upload to blog.dubheee.com
+    -   Upload to blog.dubheee.com
 
 * 2018/3/28
--   Fix update value and add more question type of same category by random_int
--   fix verify method of property and value
--   Need to think about the strategy of asking question.
+    -   Fix update value and add more question type of same category by random_int
+    -   fix verify method of property and value
+    -   Need to think about the strategy of asking question.
 
 * 2018/4/4
--   New strategy to present the question by the priority.
--   Add new table of Question model.
--   Add interact method of Models.Question in view.py
+    -   New strategy to present the question by the priority.
+    -   Add new table of Question model.
+    -   Add interact method of Models.Question in view.py
 
 * 2018/4/5
--   Create Cybera Network cloud.
--   Test successfully.
+    -   Create Cybera Network cloud.
+    -   Test successfully.
 
 * 2018/4/6
--   Need one have higer capacity.
--   Cloud rebuild failed.
+    -   Need one have higer capacity.
+    -   Cloud rebuild failed.
