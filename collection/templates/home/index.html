@@ -38,7 +38,8 @@
 
 {% block footer %}
 	<!-- COPYRIGHT -->
-	<a href="#contact-us" onclick="$('#contact-us').show()">Contact & copyright</a>
+	<article class="footer">
+	<a href="#contact-us" onclick="$('#contact-us').show()" >Contact & copyright</a>
 	<section id="contact-us" style="display: none">
 		<img src="{% static 'images/umls_tree_sm.jpg' %}" alt="umls tree logo" />
 		<span> All original disease and symptom data are provided by <a href="https://www.nlm.nih.gov/research/umls/support.html">The UMLS Terminology Services</a>. </span>
@@ -50,6 +51,7 @@
 			<p>Edmonton, AB, T6G 2E8, Canada</p>
 		</address>
 	</section>
+	</article>
 {% endblock %}
 
 {% block extrascript %}
