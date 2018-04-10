@@ -1,2 +1,9 @@
 # database
 db.sqlite3
+.ssh
+.DS_Store
+dubhemac.pem
+
+__pycache__
+.idea
+migrations
