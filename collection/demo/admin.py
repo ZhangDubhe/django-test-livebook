@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
 		('User', {'fields': ['user_name']}),
 		('User information', {'fields': ['user_email', 'is_admin', 'user_password']}),
 	]
-	list_display = ('user_name', 'user_email', 'add_at', 'user_password', 'is_admin')
+	list_display = ('id', 'user_name', 'user_email', 'add_at', 'user_password', 'is_admin')
 
 
 class DiseaseAdmin(admin.ModelAdmin):
@@ -98,6 +98,14 @@ class QuestionAdmin(admin.ModelAdmin):
 	list_display = ('id', 'disease', 'head', 'body', 'type', 'topic', 'add_at','priority')
 
 
+class TopicAdmin(admin.ModelAdmin):
+	list_display = ('id', 'name', 'user', 'add_at')
+
+
+class DiseaseGroupAdmin(admin.ModelAdmin):
+	list_display = ('id', 'topic', 'disease', 'add_at')
+
+
 admin.site.register(Disease, DiseaseAdmin)
 admin.site.register(Symptom, SymptomAdmin)
 admin.site.register(DiseaseLink, DiseaseLinkAdmin)
@@ -106,5 +114,5 @@ admin.site.register(Property, PropertyAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UserLog, UserLogAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Topic)
-admin.site.register(DiseaseGroup)
+admin.site.register(Topic, TopicAdmin)
+admin.site.register(DiseaseGroup, DiseaseGroupAdmin)

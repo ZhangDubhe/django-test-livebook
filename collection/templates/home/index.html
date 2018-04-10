@@ -5,19 +5,19 @@
 {% block content %}
 
     {% block object-tools %}{% endblock %}
-    <header class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
+    <header class="col-12 col-md-12 mb-4 pl-4 pr-4">
         <h4>{% trans "Hello"  %}, <span style="text-transform: capitalize">{% blocktrans %}{{  username  }}!{% endblocktrans %}</span></h4>
     </header>
     <br/>
 
-    <section class="col-xs-12 col-sm-12 mb-4">
+    <section class="col-12 col-md-7 mb-4">
         <p>{{ content }}</p>
         <p>{{ para }}</p>
 	    {% if user.user_name %}
 		<div class="col-5 mb-4">
 			<div class="list-group" id="list-tab" role="tablist">
 				{% for topic in topicSet  %}
-				<a class="list-group-item list-group-item-action" id="list-{{ topic }}" data-toggle="list" href="" onclick="session.setItem('topic', '{{ topic.concept_type }}')" role="tab">{{ topic.concept_type }} - {{ topic.count }} </a>
+				<a class="list-group-item list-group-item-action" id="list-{{ topic }}" data-toggle="list" href="" onclick="session.setItem('topic', '{{ topic.concept_type }}')" role="tab">{{ topic.topic__name }} - {{ topic.count }} </a>
 				{% endfor %}
 			</div>
 		</div>
@@ -28,11 +28,19 @@
             {{ response }}
         </p>
 	    {% endif %}
+		<button class="btn btn-dark" onclick="start()" > start </button>
     </section>
 
-    <div class="col-xs-12 col-sm-12 mb-4 pl-4 pr-4">
-        <button class="btn btn-dark" onclick="start()" > start </button>
-    </div>
+{% if user.is_admin and topic_tables %}
+    <section class="col-12 col-md-5 mb-4 pl-4 pr-4 edit-panel">
+        <h5>All topics</h5>
+
+	    <p>Add a new one?</p>
+
+
+    </section>
+{% endif %}
+
 
 {% endblock %}
 

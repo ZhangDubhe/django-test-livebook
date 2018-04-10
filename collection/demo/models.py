@@ -20,6 +20,18 @@ class UMLS_st(models.Model):
 		return self.ticket
 
 
+class User(models.Model):
+	user_name = models.CharField(max_length=250, unique=True)
+	user_email = models.CharField(max_length=250)
+	user_password = models.CharField(max_length=250)
+	is_admin = models.BooleanField(default=False)
+	add_at = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return self.user_name
+	# delete org and email
+
+
 class Term(models.Model):
 	concept_identifier = models.CharField(max_length=8, null=True)
 	name = models.TextField(null=True)
@@ -29,9 +41,9 @@ class Term(models.Model):
 
 
 class Topic(models.Model):
-	name = models.CharField(max_length=50, null=True)
-	create_by = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, default=1)
-	add_at = models.DateTimeField(auto_now=True)
+	name = models.CharField(max_length=50, default='default')
+	user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, default=1)
+	add_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return self.name
@@ -46,12 +58,12 @@ class Disease(models.Model):
 
 
 class DiseaseGroup(models.Model):
-	concept_type = models.ForeignKey(Topic, on_delete=models.CASCADE)
-	disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
-	add_at = models.DateTimeField(auto_now=True)
+	topic = models.ForeignKey(Topic, on_delete=models.CASCADE, default=1)
+	disease = models.ForeignKey(Disease, on_delete=models.CASCADE, default=1)
+	add_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
-		return self.concept_type + ":" + self.disease
+		return self.topic.name + ":" + self.disease.name
 
 
 class Symptom(models.Model):
@@ -61,20 +73,6 @@ class Symptom(models.Model):
 
 	def __str__(self):
 		return self.symptom_name
-
-
-class User(models.Model):
-	user_name = models.CharField(max_length=250, unique=True)
-	user_email = models.CharField(max_length=250)
-	user_password = models.CharField(max_length=250)
-	is_admin = models.BooleanField(default=False)
-	add_at = models.DateTimeField(auto_now=True)
-
-	def __str__(self):
-		return self.user_name
-
-
-# delete org and email
 
 
 class Property(models.Model):

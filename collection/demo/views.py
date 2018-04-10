@@ -48,13 +48,18 @@ def addDiseaseInTopic(request):
     if request.method == "POST":
         name = request.POST.get('topic')
         disease = request.POST.get('disease')
-        try:
-            newTopic = DiseaseGroup(concept_type=name, disease=disease)
-            newTopic.save()
-            result="Choose disease in " + name
-            status = 20
-        except:
-            result="Can't make it. "
+        thisTopic = Topic.objects.get(name=name)
+        for each in disease:
+            try:
+                addDisease = DiseaseGroup(concept_type=thisTopic.id, disease=disease)
+                addDisease.save()
+                result = "[ Add Disease"+ name +" ] Choose disease in " + each
+                status = 20
+            except:
+                result = "[ Add Disease"+ name +" ] Fail on "+ each
+                status = 500
+        if status != 20:
+            result = "Can't make it. "
             status = 500
     else:
         result = "request method error"
@@ -117,22 +122,23 @@ def queueQuestion(topic):
     # New question
     return question
 
-def generateDefaultQuestion():
+def generateQuestion(topic):
     lastestQuestion = ''
     try:
-        questions = Question.objects.filter(type='symptom')
+        questions = Question.objects.filter(type='symptom',topic =topic)
         lastestQuestion = questions.order_by('-add_at')[0]
     except:
         print("not have questions yet")
     if lastestQuestion != '':
         try:
-            diseases = Disease.objects.filter(id__gt=lastestQuestion.headkey)
+            diseases = DiseaseGroup.objects.filter(disease__gt=lastestQuestion.headkey)
         except Disease.DoesNotExist:
             return 0
     else:
         diseases = Disease.objects.all()
-    for each in diseases:
-        new = Question(topic=each.concept_type, type='symptom', head=each.name, headkey=each.id, priority=10000 - 10)
+    for eachOfGroup in diseases:
+        each = Disease.objects.get(id=eachOfGroup.disease__id)
+        new = Question(topic=topic, type='symptom', head=each.name, headkey=each.id, priority=10000 - 10)
         new.save()
     return 1
 
@@ -237,7 +243,7 @@ def register(request):
 
     if status == 20:
         user_name = _(user.user_name)
-        topicSet = DiseaseGroup.objects.values('concept_type').annotate(count=Count('id'))
+        topicSet = DiseaseGroup.objects.values('topic__name').annotate(count=Count('id'))
         content = "Please select one topic to begin. "
         para = ""
         return render(request, 'home/index.html', {
@@ -281,7 +287,7 @@ def login(request, **uuid):
 
     if status == 20:
         user_name = _(m.user_name)
-        topicSet = DiseaseGroup.objects.values('concept_type').annotate(count=Count('id'))
+        topicSet = DiseaseGroup.objects.values('topic__name').annotate(count=Count('id'))
         content = "Please select one topic to begin."
         para = ""
         return render(request, 'home/index.html', {
@@ -341,7 +347,7 @@ def index(request):
     })
 
 #  QUIZ
-def quiz(request, uuid ):
+def quiz(request, uuid):
     start_time = time.time()
     # check uuid
     try:
