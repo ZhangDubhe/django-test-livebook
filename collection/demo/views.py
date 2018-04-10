@@ -10,27 +10,102 @@ import json
 import random
 import time
 
-from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value, Term, Question
+from .models import Disease, Symptom, DiseaseLink, UMLS_tgt, UMLS_st, User, UserLog, Property, Value, Term, Question, DiseaseGroup, Topic
 from .Authentication import Authentication as auth
 from .tables import SimpleTable
 
 MAX_PRIORITY = 10000
 
-def random_int(a, b=None):
+def randomInt(a, b=None):
     if b is None:
         a, b = 0, a
     return random.randint(a, b)
 
 
-def get_random():
-    return random.uniform(0, 3)
+def createTopic(request):
+    if request.method == "POST":
+        name = request.POST.get('topic')
+        uuid = request.POST.get('uuid')
+        # add name and uuid of Topic
+        try:
+            newTopic = Topic(name=name, create_by=uuid)
+            newTopic.save()
+            result="Create topic success, remember add diseases in this topic."
+            status = 20
+        except:
+            result="Can't add Topic normally, you can edit it in admin page."
+            status = 500
+    else:
+        result = "request method error"
+        status = 500
+    return HttpResponse(json.dumps({
+        "result": result,
+        "status": status
+    }))
 
 
-def auth_error(request, result):
-    return render(request, 'registration/register.html', {
-        'title': 'Register',
-        'other': result
-    })
+def addDiseaseInTopic(request):
+    if request.method == "POST":
+        name = request.POST.get('topic')
+        disease = request.POST.get('disease')
+        try:
+            newTopic = DiseaseGroup(concept_type=name, disease=disease)
+            newTopic.save()
+            result="Choose disease in " + name
+            status = 20
+        except:
+            result="Can't make it. "
+            status = 500
+    else:
+        result = "request method error"
+        status = 500
+    return HttpResponse(json.dumps({
+        "result": result,
+        "status": status
+    }))
+
+
+def createDisease(request):
+    if request.method == "POST":
+        if not request.POST.get('topic'):
+            name = request.POST.get('name')
+            cui = request.POST.get('cui')
+            try:
+                newDisease = Disease(name=name, content_unique_id=cui)
+                result = "UPDATE Disease success"
+                status = 20
+                newDisease.save()
+            except:
+                result = "UPDATE Disease error"
+                status = 500
+        else:
+            name = request.POST.get('name')
+            cui = request.POST.get('cui')
+            topic = request.POST.get('topic')
+            try:
+                newDisease = Disease(name=name, content_unique_id=cui)
+                result = "UPDATE Disease success"
+                status = 20
+            except:
+                result = "UPDATE Disease error"
+                status = 500
+            if newDisease:
+                try:
+                    newDiseaseGroup = DiseaseGroup(disease=newDisease.id, concept_type=topic)
+                    result = "UPDATE Disease success"
+                    status = 20
+                    newDiseaseGroup.save()
+                    generateDefaultQuestion()
+                except:
+                    result = "UPDATE Disease error"
+                    status = 500
+    else:
+        result = "request method error"
+        status = 500
+    return HttpResponse(json.dumps({
+        "result": result,
+        "status": status
+    }))
 
 
 def queueQuestion(topic):
@@ -42,6 +117,24 @@ def queueQuestion(topic):
     # New question
     return question
 
+def generateDefaultQuestion():
+    lastestQuestion = ''
+    try:
+        questions = Question.objects.filter(type='symptom')
+        lastestQuestion = questions.order_by('-add_at')[0]
+    except:
+        print("not have questions yet")
+    if lastestQuestion != '':
+        try:
+            diseases = Disease.objects.filter(id__gt=lastestQuestion.headkey)
+        except Disease.DoesNotExist:
+            return 0
+    else:
+        diseases = Disease.objects.all()
+    for each in diseases:
+        new = Question(topic=each.concept_type, type='symptom', head=each.name, headkey=each.id, priority=10000 - 10)
+        new.save()
+    return 1
 
 def createQuestion(topic, type, head_id, body_id, disease_id):
     global MAX_PRIORITY
@@ -95,7 +188,7 @@ def highPriorityQuestion(topic, type, question_id):
     return 0
 
 
-def verify_count(count_a, count_da):
+def verifyCount(count_a, count_da):
     if count_da == 0:
         if count_a > 5:
             return True
@@ -107,7 +200,7 @@ def verify_count(count_a, count_da):
         else:
             return False
 
-
+# REGISTRATION
 def register(request):
     status = 0
     if request.method == "POST":
@@ -119,7 +212,7 @@ def register(request):
         if username:
             pass
         else:
-            return auth_error(request, result)
+            return authError(request, result)
         if useremail:
             pass
         else:
@@ -127,7 +220,7 @@ def register(request):
         if userpassword:
             pass
         else:
-            return auth_error(request, result)
+            return authError(request, result)
 
         try:
             is_resist_user = User.objects.get(user_name=username)
@@ -144,7 +237,7 @@ def register(request):
 
     if status == 20:
         user_name = _(user.user_name)
-        topicSet = Disease.objects.values('concept_type').annotate(count=Count('id'))
+        topicSet = DiseaseGroup.objects.values('concept_type').annotate(count=Count('id'))
         content = "Please select one topic to begin. "
         para = ""
         return render(request, 'home/index.html', {
@@ -188,7 +281,7 @@ def login(request, **uuid):
 
     if status == 20:
         user_name = _(m.user_name)
-        topicSet = Disease.objects.values('concept_type').annotate(count=Count('id'))
+        topicSet = DiseaseGroup.objects.values('concept_type').annotate(count=Count('id'))
         content = "Please select one topic to begin."
         para = ""
         return render(request, 'home/index.html', {
@@ -205,31 +298,37 @@ def login(request, **uuid):
             'other': msg
         })
 
-
 def logout(request):
     return render(request, 'registration/logout.html', {
 
     })
 
 
-def password_change(request):
+def authError(request, result):
+    return render(request, 'registration/register.html', {
+        'title': 'Register',
+        'other': result
+    })
+
+
+def changePassword(request):
     return render(request, 'registration/logout.html', {
 
     })
 
 
-def init_login(request):
+def initLogin(request):
     return render(request, 'registration/login.html', {
         'title': 'Login'
     })
 
 
-def init_register(request):
+def initRegister(request):
     return render(request, 'registration/register.html', {
         'title': 'Register'
     })
 
-
+#  HOME
 def index(request):
     user_name = _("user")
     content = "Are you ready?"
@@ -241,18 +340,7 @@ def index(request):
         'para': para
     })
 
-
-def user_auth(uuid):
-    try:
-        user_is_related = User.objects.get(pk=uuid).is_related
-    except User.DoesNotExist:
-        return False
-    if user_is_related:
-        return True
-    else:
-        return False
-
-
+#  QUIZ
 def quiz(request, uuid ):
     start_time = time.time()
     # check uuid
@@ -366,7 +454,7 @@ def quiz(request, uuid ):
         'user': user,
         'para': para,
         'type': type,
-        'random_int': random_int(1, 10),
+        'random_int': randomInt(1, 10),
         'disease': disease,
         'symptoms': symptoms,
         'symptom': symptom,
@@ -379,31 +467,7 @@ def quiz(request, uuid ):
     })
 
 
-def polls(request):
-    return render(request, 'polls/index.html', {
-        'content': 'This is poll page ',
-        'title': 'Poll'
-    })
-
-
-def update_disease(request):
-    if request.method == "POST":
-        name = request.POST.get('name')
-        cui = request.POST.get('cui')
-        try:
-            Disease.objects.create(name=name, content_unique_id=cui)
-            result = "UPDATE Disease success"
-            status = 20
-        except:
-            result = "UPDATE Disease error"
-            status = 500
-        return HttpResponse(json.dumps({
-            "result": result,
-            "status": status
-        }))
-
-
-def upload_answer(request):
+def uploadAnswer(request):
     if request.method == 'POST' and request.POST.get('name') == 'answer':
         print("[ + ] ================ UPLOAD ================")
         print("[ + ] ", request.POST.get('data'))
@@ -422,7 +486,7 @@ def upload_answer(request):
             for each in selections:
                 try:
                     dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=each["id"])
-                    dl.is_valid = verify_count(dl.count_agree + 1, dl.count_disagree)
+                    dl.is_valid = verifyCount(dl.count_agree + 1, dl.count_disagree)
                     dl.count_agree = dl.count_agree + 1
                     dl.save()
                     result = "Update log success"
@@ -459,11 +523,11 @@ def upload_answer(request):
             try:
                 dl = DiseaseLink.objects.get(disease_id=question_id, symptom_id=symptom_id)
                 if data["is_agree"] == 'True':
-                    dl.is_valid = verify_count(dl.count_agree + 1, dl.count_disagree)
+                    dl.is_valid = verifyCount(dl.count_agree + 1, dl.count_disagree)
                     dl.count_agree = dl.count_agree + 1
                     print('you agree')
                 else:
-                    dl.is_valid = verify_count(dl.count_agree, dl.count_disagree + 1)
+                    dl.is_valid = verifyCount(dl.count_agree, dl.count_disagree + 1)
                     dl.count_disagree = dl.count_disagree + 1
                     print('you disagree')
                 dl.save()
@@ -492,7 +556,7 @@ def upload_answer(request):
                     propertyId = np.id
                 else:
                     rp = Property.objects.get(id=each["id"])
-                    rp.is_valid = verify_count(rp.count_agree + 1, rp.count_disagree)
+                    rp.is_valid = verifyCount(rp.count_agree + 1, rp.count_disagree)
                     rp.count_agree = rp.count_agree + 1
                     rp.save()
                     result = "Update log Success"
@@ -513,11 +577,11 @@ def upload_answer(request):
             is_agree = data["is_agree"]
             rp = Property.objects.get(id=selections)
             if data["is_agree"] == 'True':
-                rp.is_valid = verify_count(rp.count_agree + 1, rp.count_disagree)
+                rp.is_valid = verifyCount(rp.count_agree + 1, rp.count_disagree)
                 rp.count_agree = rp.count_agree + 1
                 print('you agree')
             else:
-                rp.is_valid = verify_count(rp.count_agree, rp.count_disagree + 1)
+                rp.is_valid = verifyCount(rp.count_agree, rp.count_disagree + 1)
                 rp.count_disagree = rp.count_disagree + 1
                 print('you disagree')
             rp.save()
@@ -551,7 +615,7 @@ def upload_answer(request):
                         status = 0
                 else:
                     resist_value = Value.objects.get(id=each["id"])
-                    resist_value.is_valid = verify_count(resist_value.count_agree + 1, resist_value.count_disagree)
+                    resist_value.is_valid = verifyCount(resist_value.count_agree + 1, resist_value.count_disagree)
                     resist_value.count_agree = resist_value.count_agree + 1
                     resist_value.save()
                     result = "Update value log Success"
@@ -569,11 +633,11 @@ def upload_answer(request):
             try:
                 resist_value = Property.objects.get(id=selection_id)
                 if data["is_agree"] == 'True':
-                    resist_value.is_valid = verify_count(resist_value.count_agree + 1, resist_value.count_disagree)
+                    resist_value.is_valid = verifyCount(resist_value.count_agree + 1, resist_value.count_disagree)
                     resist_value.count_agree = resist_value.count_agree + 1
                     print('you agree')
                 else:
-                    resist_value.is_valid = verify_count(resist_value.count_agree, resist_value.count_disagree + 1)
+                    resist_value.is_valid = verifyCount(resist_value.count_agree, resist_value.count_disagree + 1)
                     resist_value.count_disagree = resist_value.count_disagree + 1
                     print('you disagree')
                 resist_value.save()
@@ -604,7 +668,7 @@ def upload_answer(request):
     }))
 
 
-def search_terms(request):
+def searchTerms(request):
     if request.method == "GET":
         type = request.GET.get("type")
         str = request.GET.get("str")
@@ -647,7 +711,7 @@ def search_terms(request):
         }))
 
 
-def search_self(request):
+def searchSelf(request):
     if request.method == "GET":
         type = request.GET.get("type")
         str = request.GET.get("str")
@@ -690,7 +754,7 @@ def search_self(request):
         }))
 
 
-def add_symptom(request):
+def addSymptom(request):
     if request.method == "POST":
         name = request.POST.get('name')
         cui = request.POST.get('cui')
@@ -707,7 +771,7 @@ def add_symptom(request):
         }))
 
 
-def update_disease_link(disease_id, symptom_id):
+def updateDiseaseLink(disease_id, symptom_id):
     try:
         result = DiseaseLink.objects.filter(disease_id=disease_id, symptom_id=symptom_id)
     except:
@@ -841,7 +905,7 @@ def createLog(uuid, type, item_id):
             pass
 
 
-def user_status(request, uuid):
+def showUserStatus(request, uuid):
     user_log = UserLog.objects.filter(user=uuid).all()
     try:
         count = user_log.values('user').annotate(tol=Count('id')).order_by('tol')[0]["tol"]

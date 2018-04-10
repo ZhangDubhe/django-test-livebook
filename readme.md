@@ -199,6 +199,6 @@ Django seems like very easy, but when you have many problem in fundation knowled
 -   Upload to blog.dubheee.com
 
 * 2018/3/28
--   Fix update value and add more question type of same category by random_int
+-   Fix update value and add more question type of same category by randomInt
 -   fix verify method of property and value
 -   Need to think about the strategy of asking question.

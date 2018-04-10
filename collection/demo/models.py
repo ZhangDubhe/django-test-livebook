@@ -28,13 +28,30 @@ class Term(models.Model):
 	source = models.CharField(max_length=20, null=True)
 
 
-class Disease(models.Model):
-	content_unique_id = models.CharField(max_length=8, null=True)
-	name = models.TextField()
-	concept_type = models.CharField(max_length=150, null=True, default="Null")
+class Topic(models.Model):
+	name = models.CharField(max_length=50, null=True)
+	create_by = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, default=1)
+	add_at = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
 		return self.name
+
+
+class Disease(models.Model):
+	content_unique_id = models.CharField(max_length=8, null=True)
+	name = models.TextField()
+
+	def __str__(self):
+		return self.name
+
+
+class DiseaseGroup(models.Model):
+	concept_type = models.ForeignKey(Topic, on_delete=models.CASCADE)
+	disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
+	add_at = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return self.concept_type + ":" + self.disease
 
 
 class Symptom(models.Model):
