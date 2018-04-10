@@ -38,11 +38,8 @@ Every table is established followed this document, so you can find each explanat
 
 
 - - -
-
-
-### Aim:
+### Project Aim:
 To develop a special-purpose case-authoring environment, to enable the collection of cases from a broader audience. Collect Information to enlarge Database Of Disease and symptom.
-
 
 ### Webpage structure
 User interface
@@ -65,7 +62,15 @@ Admin interface
     
     There are all important tables on this page and the admin can check whether the data is right when people uploading something.
 
-
+### Deployment
+1. Install python (3.6) and pip
+2. Install django 
+```
+pip install django
+pip install requests, lxml, django-table2
+```
+3. cd to project dir and build database
+4. runserver 
 
 
 * * *
