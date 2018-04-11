@@ -1,11 +1,49 @@
 <div class="edit-panel">
 	<h5>Edit Topic</h5>
 	<a class="button">Topic A</a>
-	<list>
-		<ol>
-			<li>Disease 1</li>
-			<li>Disease 2</li>
-			<li>Disease 3</li>
-		</ol>
+	<list >
+		<ul id="topic-list" class="list-group list-group-flush">
+		</ul>
+		<input type="text" name="topicList" id="add-topic-input" placeholder="add new topic?" />		
 	</list>
+	<list >
+		<ul id="disease-group">
+
+		</ul>
+		<input type="text" name="diseaseGroup" id="add-disease-input" placeholder="add disease into this topic?" />
+		<button type="button" class="btn btn-outline-secondary" onclick="" data-toggle="modal" data-target="#addDiseaseModal">Add Disease</button>
+	</list>
+
+	<!-- Modal -->
+	<div class="modal fade" id="addDiseaseModal" tabindex="-1" role="dialog" aria-labelledby="addDiseaseModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="addDiseaseModalLabel">Add new disease</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<section>
+						<h5> Search </h5>
+						<input name="cui" placeholder="CUI, like C80800" type="text" />
+						
+					</section>
+					or
+					<section>
+						<h5> Input </h5>						
+						<input name="cui" placeholder="CUI, like C80800"  type="text"/>
+						<input name="diease" placeholder="name, like Otitis Externa"  type="text"/>
+	
+					</section>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancer</button>
+					<button type="button" class="btn btn-primary">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

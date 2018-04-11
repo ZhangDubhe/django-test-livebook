@@ -59,22 +59,32 @@
 {% endblock %}
 
 {% block extrascript %}
-	<script>
-		{% if user.user_name %}
+	{% if user.user_name %}
+		<script>
 			login('{{ user.id }}');
 			console.log('{{ user.user_name }}');
-		{% else %}
+		</script>
+	{% else %}
+		<script>
 			if(parseInt(session.uuid)>0){
 				location.href = "/account/login-post/"+session.uuid;
 			}
-		{% endif %}
+		</script>
+	{% endif %}
+	<script>
 		check_login();
 		session.removeItem("topic");
-
 	</script>
     <script src="{% static "home/js/home.js" %}">
     </script>
     <script src="{% static "home/js/load.js" %}">
-    </script>
+	</script>
 
+	{% if user.is_admin %}
+	<script src="{% static "home/js/edit.js" %}"></script>
+	<script>
+		// loading
+		loadTopicList();
+	</script>
+	{% endif %}
 {% endblock %}
