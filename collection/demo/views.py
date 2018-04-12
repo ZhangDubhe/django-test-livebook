@@ -22,6 +22,51 @@ def randomInt(a, b=None):
     return random.randint(a, b)
 
 
+def loadTopic(request):
+    if request.method == "POST":
+        topics = Topic.objects.all()
+        res_list = []
+        for each in topics:
+            res = {}
+            res["name"] = each.name
+            res["id"] = each.id
+            res_list.append(res)
+        result = res_list
+        print(result)
+        status = 20
+    else:
+        result = "request method error"
+        status = 500
+    return HttpResponse(json.dumps({
+        "result": result,
+        "status": status
+    }))
+
+
+def loadDiseaseGroup(request):
+    if request.method == "POST":
+        selectTopic = request.POST.get('topic')
+        selectDiseaseGroup = DiseaseGroup.objects.filter(topic=selectTopic)
+        res_list = []
+        for each in selectDiseaseGroup:
+            res = {}
+            res["name"] = each.disease.name
+            res["id"] = each.disease.id
+            res_list.append(res)
+            selectTopic = each.topic.name
+        result = res_list
+        print(result)
+        status = 20
+    else:
+        result = "request method error"
+        status = 500
+    return HttpResponse(json.dumps({
+        "result": result,
+        "topicName": selectTopic,
+        "status": status
+    }))
+
+
 def createTopic(request):
     if request.method == "POST":
         name = request.POST.get('topic')

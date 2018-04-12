@@ -7,9 +7,9 @@ function loadTopicList() {
         }, function (res) {
             res = JSON.parse(res);
             if (res.status == 20) {
-                console.log(res.results);
-                res.results.forEach(function (topic) {
-                    let insertText = '<li id="topiclist-' + topic.id + '" class="list-group-item" onclick="loadQuestionGroup(this)">' + topic.name + '</li>';
+                console.log(res.result);
+                res.result.forEach(function (topic) {
+                    let insertText = '<li id="topiclist-' + topic.id + '" class="list-group-item" onclick="loadDiseaseGroup(this)">' + topic.name + '</li>';
                     $('#topic-list').append(insertText);
                 });
             } else {
@@ -18,6 +18,7 @@ function loadTopicList() {
         }
     )
 }
+
 function addTopic() {
     var name = $('add-topic-input').val();
     $.post(
@@ -29,9 +30,9 @@ function addTopic() {
         }, function (res) {
             res = JSON.parse(res);
             if (res.status == 20) {
-                console.log(results);
-                res.results.forEach(function (topic) {
-                    let insertText = '<li id="disease-' + topic.id + '" class="list-group-item" onclick="loadQuestionGroup(this)">' + topic.name + '</li>';
+                console.log(result);
+                res.result.forEach(function (topic) {
+                    let insertText = '<li id="disease-' + topic.id + '" class="list-group-item" onclick="loadDiseaseGroup(this)">' + topic.name + '</li>';
                     $('#topic-list').append(insertText);
                 });
             } else {
@@ -40,9 +41,11 @@ function addTopic() {
         }
     )
 }
+
 function loadDiseaseGroup(object) {
     console.log(object.id);
-    var topic = object.id;
+    var topic = object.id.split("-")[1];
+    console.log(topic);
     $.post(
         API_PATH + "load-diseaseGroup",
         {
@@ -50,12 +53,14 @@ function loadDiseaseGroup(object) {
             topic: topic
         }, function (res) {
             res = JSON.parse(res);
+            console.log(res);
             if (res.status == 20) {
-                res.results.forEach(function (topic) {
-                    let insertText = '<li id="disease-' + topic.id + '" class="list-group-item" onclick="loadQuestionGroup(this)">' + topic.name + '</li>';
-                    $('#disease-gorup').append(insertText);
+                res.result.forEach(function (disease) {
+                    let insertText = '<li id="disease-' + disease.id + '" class="list-group-item" >' + disease.name + '</li>';
+                    console.log(insertText);
+                    $('#disease-group').append(insertText);
                 });
-                $('#disease-group').attr('name') = topic;
+                $('#disease-group').attr('name', res.topicName);
             } else {
                 layer.msg("[" + res.status + "]" + res.result);
             }

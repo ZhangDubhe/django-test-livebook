@@ -18,6 +18,11 @@ urlpatterns = [
     path('umls-auth', views.umls_auth, name='umls-auth'),
     path('upload-answer', views.uploadAnswer, name='upload-answer'),
     path('search-terms', views.searchTerms, name='search-terms'),
-    path('quiz/disease/<int:uuid>/', views.quiz, name='quiz')
+    path('quiz/disease/<int:uuid>/', views.quiz, name='quiz'),
     # path('polls', views.polls, name='polls'),
+    path('add-disease', views.createDisease),
+    path('load-topic', views.loadTopic),
+    path('add-topic', views.createTopic),
+    path('load-diseaseGroup', views.loadDiseaseGroup),
+    path('add-diseaseGroup-to-group', views.addDiseaseInTopic)
 ]
