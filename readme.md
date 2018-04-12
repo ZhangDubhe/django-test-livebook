@@ -28,6 +28,22 @@ This file contains instruction of this project and development logs.
     - [DevLog](#devlog)
 
 <!-- /TOC -->
+## Deployment
+1. Install python (3.6) and pip3
+```
+#ubuntu
+sudo apt-get update && sudo apt-get install python-pip3
+#MacOS
+
+```
+2. Install django
+```
+pip install django
+pip install requests, lxml, django-table2
+```
+3. cd to project dir and build database
+4. runserver
+
 
 ## Demo Instruction
 There are user interface  and admin interface which all powered by Django. Although user interface is more important, we also need the admin one to look through our data.
@@ -62,16 +78,22 @@ Admin interface
     
     There are all important tables on this page and the admin can check whether the data is right when people uploading something.
 
-### Deployment
-1. Install python (3.6) and pip
-2. Install django 
-```
-pip install django
-pip install requests, lxml, django-table2
-```
-3. cd to project dir and build database
-4. runserver 
 
+### Deploy on Cybera
+#### log in instance by shh key
+密钥对是用来登录您创建的实例的方式。为密钥对取一个方便您自己辨别的名字，然后在下方提供的空间内粘贴您的SSH公钥。
+可以使用 ssh-keygen 命令来生成SSH密钥对：
+```
+ssh-keygen -t rsa -f cloud.key
+```
+这将生成一对密钥对：一个私钥 (cloud.key)和一个公钥(cloud.key.pub)。请妥善保存好您的私钥，并把公钥文件内容粘贴在这里.创建实例后，您使用私钥来登录实例(登陆用户名取决您所用的镜像)：
+```
+sudo ssh -i cloud.key <username>@<instance_ip> #sudo 可行， 无sudo不行
+```
+[Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+Using+the+Cybera+Rapid+Access+Cloud)
+
+#### Create Security group
+#### Bind the float IP address
 
 * * *
 
@@ -165,24 +187,7 @@ example
 if invalid:
        
       HTTP/1.1 403 Forbidden
-       A new service ticket must be generated for each request to the API.                      
-
-## Deploy on Cybera
-### log in instance by shh key
-密钥对是用来登录您创建的实例的方式。为密钥对取一个方便您自己辨别的名字，然后在下方提供的空间内粘贴您的SSH公钥。
-可以使用 ssh-keygen 命令来生成SSH密钥对：
-```
-ssh-keygen -t rsa -f cloud.key
-```
-这将生成一对密钥对：一个私钥 (cloud.key)和一个公钥(cloud.key.pub)。请妥善保存好您的私钥，并把公钥文件内容粘贴在这里.创建实例后，您使用私钥来登录实例(登陆用户名取决您所用的镜像)：
-```
-ssh -i cloud.key <username>@<instance_ip>
-```
-[Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+Using+the+Cybera+Rapid+Access+Cloud)
-
-### Create Security group
-### Bind the float IP address
-
+       A new service ticket must be generated for each request to the API.
 ## DevLog
 * 2018/2/7 1518059603.698126
 
@@ -253,3 +258,9 @@ ssh -i cloud.key <username>@<instance_ip>
 * 2018/4/6
     -   Need one have higer capacity.
     -   Cloud rebuild failed.
+
+* 2018/4/12
+    -   Create some function about topic and disease update.
+    -   Connect using "sudo ssh -i livebook.key ubuntu@204.209.76.221" in MacOS, succeed finally.
+    -   Transfer data of disease.
+    -   Deploy on Cybera
