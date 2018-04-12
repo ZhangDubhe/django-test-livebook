@@ -1,47 +1,76 @@
-<div class="edit-panel">
-	<h5>Edit Topic</h5>
+
+<h5>Edit Topic</h5>
+
+<section class="list-container">
 	<list class="list-panel">
+		<p>Topic list</p>
 		<ul id="topic-list" class="list-group list-group-flush">
+			<!--topiclist-#id-->
+			
 		</ul>
-		<input type="text" name="topicList" id="add-topic-input" placeholder="add new topic?" />		
+		<div class="input-group ">
+			<input type="text" name="topicList" id="add-topic-input" placeholder="add new topic?" class="form-control" />
+			<div class="input-group-append">
+				<button type="button" onclick="addTopic()" class="btn btn-outline-secondary">Add</button>
+			</div>
+		</div>
 	</list>
-	<list class="list-panel">
-		<ul id="disease-group">
-
-		</ul>
-		<input type="text" name="diseaseGroup" id="add-disease-input" placeholder="add disease into this topic?" />
-		<button type="button" class="btn btn-outline-secondary" onclick="" data-toggle="modal" data-target="#addDiseaseModal">Add Disease</button>
-	</list>
-
-	<!-- Modal -->
-	<div class="modal fade" id="addDiseaseModal" tabindex="-1" role="dialog" aria-labelledby="addDiseaseModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="addDiseaseModalLabel">Add new disease</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<section>
-						<h5> Search </h5>
-						<input name="cui" placeholder="CUI, like C80800" type="text" />
-						
-					</section>
-					or
-					<section>
-						<h5> Input </h5>						
-						<input name="cui" placeholder="CUI, like C80800"  type="text"/>
-						<input name="diease" placeholder="name, like Otitis Externa"  type="text"/>
 	
-					</section>
+	<list id="disease-group-list" class="list-panel">
+		<!--style="display:none"-->
+		<p>Disease in topic <strong id="disease-group-header">...</strong></p>		
+		<ul id="disease-group"  class="list-group list-group-flush">
+			<!--diseaseGroup-#id-->
+		</ul>
+		<div class="input-group" >
+			<input type="text" name="diseaseGroup" id="search-disease-input" placeholder="add disease into this topic?" class="form-control" oninput="searchDisease('disease')	"
+			/>
+			<div class="input-group-append">
+				<button type="button" onclick="searchDisease('disease')" class="btn btn-outline-secondary">Search</button>
+			</div>
+		</div>
+	</list>
+	
+	<list id="disease-list-list" class="list-panel" >
+		<!--style="display:none"-->
+		<p>Disease search result</p>
+		<ul id="disease-list"  class="list-group list-group-flush" role="tablist">
+			<!--disease-#id-->
+	
+		</ul>
+		<div class="input-group">
+			<button type="button" class="btn btn-outline-secondary form-control" onclick="addDiseaseToGroup()">
+				collect</button>
+			<div class="input-group-append">
+				<button type="button" class="btn btn-outline-secondary" onclick="" data-toggle="modal" data-target="#addDiseaseModal">Add new</button>
+			</div>
+		</div>
+	</list>
+</section>
+<p>make sure reload this page when you finish editing the topics and diseases.</p>
+<!-- Modal -->
+<div class="modal fade" id="addDiseaseModal" tabindex="-1" role="dialog" aria-labelledby="addDiseaseModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addDiseaseModalLabel">Add new disease</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<section>
+					<h5> Input the detail name of the disease.</h5>
+					<div class="input-group">
+						<input id="modal-cui" class="form-control" name="cui" placeholder="CUI in umls, like C0029882" type="text" />
+						<input id="modal-disease" class="form-control" name="diease" placeholder="name, like Otitis Media" type="text" />
+					</div>
+				</section>
 
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancer</button>
-					<button type="button" class="btn btn-primary">Save</button>
-				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancer</button>
+				<button type="button" class="btn btn-primary" onclick="addDisease()">Save</button>
 			</div>
 		</div>
 	</div>

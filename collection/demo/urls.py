@@ -24,5 +24,5 @@ urlpatterns = [
     path('load-topic', views.loadTopic),
     path('add-topic', views.createTopic),
     path('load-diseaseGroup', views.loadDiseaseGroup),
-    path('add-diseaseGroup-to-group', views.addDiseaseInTopic)
+    path('add-disease-to-group', views.addDiseaseInTopic)
 ]

@@ -53,7 +53,9 @@ def loadDiseaseGroup(request):
             res["name"] = each.disease.name
             res["id"] = each.disease.id
             res_list.append(res)
-            selectTopic = each.topic.name
+        selectTopic = Topic.objects.get(id=selectTopic)
+        selectTopicName = selectTopic.name
+        selectTopicId = selectTopic.id
         result = res_list
         print(result)
         status = 20
@@ -62,27 +64,39 @@ def loadDiseaseGroup(request):
         status = 500
     return HttpResponse(json.dumps({
         "result": result,
-        "topicName": selectTopic,
+        "topicName": selectTopicName,
+        "topicId": selectTopicId,
         "status": status
     }))
 
 
 def createTopic(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.POST.get('topic') is not None:
         name = request.POST.get('topic')
-        uuid = request.POST.get('uuid')
+        uuid = request.POST.get('user')
         # add name and uuid of Topic
+        print(name, uuid)
         try:
-            newTopic = Topic(name=name, create_by=uuid)
+            newTopic = Topic(name=name, user_id=uuid)
             newTopic.save()
-            result="Create topic success, remember add diseases in this topic."
             status = 20
+            print("[ Create Topic ] topic = ", newTopic.name)
         except:
             result="Can't add Topic normally, you can edit it in admin page."
             status = 500
+    elif request.method == "POST" and not request.POST.get('topic'):
+        result = "Please input the name of topic"
+        status = 403
     else:
         result = "request method error"
         status = 500
+    if status ==  20:
+        res_list = []
+        res = {}
+        res["name"] = newTopic.name
+        res["id"] = newTopic.id
+        res_list.append(res)
+        result = res_list
     return HttpResponse(json.dumps({
         "result": result,
         "status": status
@@ -90,22 +104,41 @@ def createTopic(request):
 
 
 def addDiseaseInTopic(request):
+    status =0
     if request.method == "POST":
-        name = request.POST.get('topic')
-        disease = request.POST.get('disease')
-        thisTopic = Topic.objects.get(name=name)
-        for each in disease:
+        topic = request.POST.get('topic')
+        diseaseList = request.POST.get('diseases')
+        print("diseases:",diseaseList)
+        print("topic:",topic)
+        diseaseList = json.loads(diseaseList)
+        res_list = []
+        for each in diseaseList:
+            existDiseaseInGroup = DiseaseGroup.objects.filter(topic_id=topic, disease__id=each["id"])
+            if len(existDiseaseInGroup) > 0 :
+                print(each["name"],"already have")
+                continue
             try:
-                addDisease = DiseaseGroup(concept_type=thisTopic.id, disease=disease)
+                addDisease = DiseaseGroup(topic_id=topic, disease_id=each["id"])
                 addDisease.save()
-                result = "[ Add Disease"+ name +" ] Choose disease in " + each
+                res = {}
+                res["name"] = addDisease.disease.name
+                res["id"] = addDisease.disease.id
+                res_list.append(res)
+                print("[ Add Disease"+ topic +" ] Choose disease in " + each["name"])
                 status = 20
             except:
-                result = "[ Add Disease"+ name +" ] Fail on "+ each
+                result = "[ Add Disease"+ topic +" ] Fail on "+ each["name"]
                 status = 500
-        if status != 20:
+        if status == 20:
+            result = res_list
+            topic = Topic.objects.get(id=topic)
+            generateQuestion(topic)          
+        elif status == 0:
+            result = each["name"] + " already have"
+        else:
             result = "Can't make it. "
             status = 500
+ 
     else:
         result = "request method error"
         status = 500
@@ -118,15 +151,18 @@ def addDiseaseInTopic(request):
 def createDisease(request):
     if request.method == "POST":
         if not request.POST.get('topic'):
-            name = request.POST.get('name')
-            cui = request.POST.get('cui')
+            name = request.POST.get('disease_name')
+            cui = request.POST.get('disease_cui')
+            print("[ post ] name = ",name," cui = ",cui)
             try:
                 newDisease = Disease(name=name, content_unique_id=cui)
-                result = "UPDATE Disease success"
+                result = "UPDATE Disease success."
                 status = 20
                 newDisease.save()
+                print("[+] ",newDisease)
             except:
-                result = "UPDATE Disease error"
+                result = "UPDATE Disease error."
+                print("[error]",Disease(name=name, content_unique_id=cui))
                 status = 500
         else:
             name = request.POST.get('name')
@@ -150,7 +186,7 @@ def createDisease(request):
                     result = "UPDATE Disease error"
                     status = 500
     else:
-        result = "request method error"
+        result = "request method error."
         status = 500
     return HttpResponse(json.dumps({
         "result": result,
@@ -159,6 +195,7 @@ def createDisease(request):
 
 
 def queueQuestion(topic):
+    print("topic :", topic)
     firstTry = Question.objects.filter(topic=topic).order_by('-priority')[0]
     question = Question.objects.filter(topic=topic, priority=firstTry.priority).order_by("?")[0]
     # 10 - 10000
@@ -168,23 +205,32 @@ def queueQuestion(topic):
     return question
 
 def generateQuestion(topic):
+    print("topic :", topic)
     lastestQuestion = ''
+    status = 0
     try:
-        questions = Question.objects.filter(type='symptom',topic =topic)
+        questions = Question.objects.filter(type='symptom',topic=topic)
         lastestQuestion = questions.order_by('-add_at')[0]
     except:
         print("not have questions yet")
     if lastestQuestion != '':
         try:
-            diseases = DiseaseGroup.objects.filter(disease__gt=lastestQuestion.headkey)
+            diseases = DiseaseGroup.objects.filter(disease__gt=lastestQuestion.headkey, topic=topic)
+            status = 200
         except Disease.DoesNotExist:
+            status = 0
             return 0
     else:
-        diseases = Disease.objects.all()
-    for eachOfGroup in diseases:
-        each = Disease.objects.get(id=eachOfGroup.disease__id)
-        new = Question(topic=topic, type='symptom', head=each.name, headkey=each.id, priority=10000 - 10)
-        new.save()
+        diseases = DiseaseGroup.objects.filter(topic=topic)
+        status = 200
+    if status == 200:
+        print(diseases)
+        for eachOfGroup in diseases:
+            print(Disease.objects.get(id=eachOfGroup.disease.id))
+            each = Disease.objects.get(id=eachOfGroup.disease.id)
+            new = Question(topic=topic, type='symptom', head=each.name, headkey=each.id, priority=10000 - 10)
+            new.save()
+
     return 1
 
 def createQuestion(topic, type, head_id, body_id, disease_id):
@@ -416,7 +462,7 @@ def quiz(request, uuid):
     type = question.type
     duration = time.time() - start_time
     print("[ + ] ================ SENDING ================")
-    print("[ + ] type = " + type + " takes " + str(duration))
+    print("[ + ] type = " + type + " takes " + str(duration) + "| topic = ", topic)
     print("[ + ] ================ ======= ================")
     if type == "symptom":
         disease = Disease.objects.get(id=question.headkey)
@@ -743,6 +789,16 @@ def searchTerms(request):
         elif type == "value":
             results = "Input to add"
             status = 0
+        elif type == "disease":
+            res_list = []
+            results = Disease.objects.filter(name__contains=str)
+            for each in results:
+                res = {}
+                res["name"] = each.name
+                res["id"] = each.id
+                res_list.append(res)
+            results = res_list
+            status = 20
         else:
             results = Term.objects.filter(name__contains=str)
             res_list = []

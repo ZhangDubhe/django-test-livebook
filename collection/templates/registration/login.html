@@ -1,4 +1,4 @@
-{% extends "../base_site.html" %}
+{% extends "../base_nav.html" %}
 {% load i18n static %}
 {% block extrastyle %}
 	<link rel="stylesheet" type="text/css" href="{% static "registration/style.css" %}" />
@@ -58,7 +58,6 @@
 
 {% block extrascript %}
     <script>
-		{% if other %}
-		{% endif %}
+
     </script>
 {% endblock %}

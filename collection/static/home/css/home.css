@@ -1,3 +1,6 @@
+body{
+    overflow-x: hidden;
+}
 .card-body{
     border:1px solid #5d5d5d;
     -webkit-border-radius: 5px;
@@ -56,4 +59,28 @@ h4 .badge {
     box-shadow: 0 1px 2px 0 #2E2D3C;
     height:auto;
     margin-bottom: 2rem;
+}
+.list-container{
+    display: inline-block;
+    overflow: hidden; 
+    height: 285px;
+    width: 100%;
+} 
+.list-panel>.list-group{
+    height: 200px;
+    top: 0;
+    overflow: scroll;
+}
+.list-panel>.input-group{
+    bottom: 0;
+}
+.list-panel{
+    display: inline-block;
+    width:32%;
+    height: 100%;
+    padding: 0 1em;
+}
+
+.list-container input, .list-container button{
+    font-size: 0.75em;
 }
