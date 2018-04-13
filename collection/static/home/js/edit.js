@@ -20,6 +20,10 @@ function loadTopicList() {
 
 function addTopic() {
     var topicName = $('#add-topic-input').val();
+    if (!topicName){
+        layer.msg("Please input the new topic name.");
+        return;
+    }
     $.post(
         API_PATH + "add-topic",
         {
