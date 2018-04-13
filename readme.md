@@ -1,6 +1,6 @@
 # Project : Data Collection System for Livebook 🚀
 
-Created  2018/1/24, 452 Athabasca Hall,U of Alberta, Edmonton Alberta
+> Created  2018/1/24, 452 Athabasca Hall,U of Alberta, Edmonton, Alberta 🇨🇦
 
 ## About this Readme.md
 This file contains instruction of this project and development logs.
@@ -13,16 +13,17 @@ This file contains instruction of this project and development logs.
             - [Ubuntu](#ubuntu)
             - [MacOS](#macos)
         - [2. Install django](#2-install-django)
+        - [3. clone the project](#3-clone-the-project)
+        - [4. runserver](#4-runserver)
     - [Demo Instruction](#demo-instruction)
-        - [Project Aim:](#project-aim)
+        - [RESEARCH PLANNING](#research-planning)
+            - [RESEARCH STEPS](#research-steps)
+            - [TIMELINE](#timeline)
         - [Webpage structure](#webpage-structure)
         - [Deploy on Cybera](#deploy-on-cybera)
             - [log in instance by shh key](#log-in-instance-by-shh-key)
             - [Create Security group](#create-security-group)
             - [Bind the float IP address](#bind-the-float-ip-address)
-    - [RESEARCH PLANNING](#research-planning)
-        - [RESEARCH STEPS](#research-steps)
-        - [TIMELINE](#timeline)
     - [Medical Knowledge Base](#medical-knowledge-base)
     - [Database Table Design](#database-table-design)
     - [UMLS Database](#umls-database)
@@ -52,9 +53,17 @@ python3 get-pip.py
 pip3 install django
 pip3 install requests  lxml  django-table2
 ```
-3. cd to project dir and build database
+### 3. clone the project 
+Use git to get the latest release on master branch.
+```git
+git clone https://github.com/ZhangDubhe/django-test-livebook.git
+```
 
-4. runserver
+### 4. runserver
+```bash
+cd django-test-livebook/collection
+python3 manage.py runserver
+```
 
 
 ## Demo Instruction
@@ -64,9 +73,24 @@ You must log in the user interface first as you enter this website and there is 
 
 Every table is established followed this document, so you can find each explanation here.
 
-- - -
-### Project Aim:
+Project Aim:
 To develop a special-purpose case-authoring environment, to enable the collection of cases from a broader audience. Collect Information to enlarge Database Of Disease and symptom.
+
+### RESEARCH PLANNING
+#### RESEARCH STEPS
+    1. Prepare for the database, describe the structure and link between each tables.
+    2. Design for the question that how to ask and how to present.
+    3. Strategy to present the different step questions.
+    4. Explain to sina and make  comments.
+    5. Make interface and database as a demo, then talk to Doctors
+    6. Design screen and UI 
+    7. Build the web page
+#### TIMELINE
+    1 - 2 weeks: Database (including design and communicate with doctor and Sina)
+    3 - 5 weeks: Collection Interactive Panel ( communicate with doctor)
+    6th week: Log-in System and recording user
+    7th week: Test
+    8th week: Transfer Data & Presentation
 
 ### Webpage structure
 User interface
@@ -89,40 +113,56 @@ Admin interface
     
     There are all important tables on this page and the admin can check whether the data is right when people uploading something.
 
+Watching the video of operating of admin user.
+Click the [video](https://drive.google.com/file/d/1HOHV6S964LC5v_y6paMQbNyBboI6oOaV/view?usp=sharing)
+and know more.
 
 ### Deploy on Cybera
 #### log in instance by shh key
-密钥对是用来登录您创建的实例的方式。为密钥对取一个方便您自己辨别的名字，然后在下方提供的空间内粘贴您的SSH公钥。
-可以使用 ssh-keygen 命令来生成SSH密钥对：
+Before instances can be created, users will require a key pair that will be injected into the instance to permit access; any instance launched from an image in the Rapid Access Cloud **must** use key pairs to access the virtual machine for the first time, as password sign-on is disabled by default, key pairs being much more secure than a default password, though it does introduce extra steps. However, once a key pair is created, it can be used for any future instances that are created; further additional key pairs can be generated for different instances if there is a need to restrict access to various systems among different users.
+
+Key Pairs are how you login to your instance after it is launched.
+
+Choose a key pair name you will recognise and paste your SSH public key into the space provided.
+
+SSH key pairs can be generated with the ssh-keygen command:
 ```
 ssh-keygen -t rsa -f cloud.key
 ```
-这将生成一对密钥对：一个私钥 (cloud.key)和一个公钥(cloud.key.pub)。请妥善保存好您的私钥，并把公钥文件内容粘贴在这里.创建实例后，您使用私钥来登录实例(登陆用户名取决您所用的镜像)：
+This generates a pair of keys: a key you keep private (cloud.key) and a public key (cloud.key.pub). Paste the contents of the public key file here.
+
+After launching an instance, you login using the private key (the username might be different depending on the image you launched):
 ```
-sudo ssh -i cloud.key <username>@<instance_ip> #sudo 可行， 无sudo不行
+sudo ssh -i cloud.key <username>@<instance_ip> 
+#sudo is neccessary sometimes
 ```
-[Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+Using+the+Cybera+Rapid+Access+Cloud)
+Detail in [Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+Using+the+Cybera+Rapid+Access+Cloud)
 
 #### Create Security group
+1. Log-in to the Rapid Access Cloud dashboard at https://cloud.cybera.ca.
+
+2. In the left-hand panel under “Compute”, click “Access & Security”.
+
+3. Click the “Security Groups” tab, click the “Manage Rules” button on the right hand side associated with the “default” security group. The list is initially empty, however we are going to add rules that:
+
+    a.  permit ICMP for ping and traceroute, from any IPv4 or IPv6 address
+
+    b.  permit ssh from any IPv4 or IPv6 address
+
+4. Click “+Add Rule” in the top right. We are going to be adding four rules. For each rule input the values, then click the blue “Add” button. Note, the first and third rules are for IPv4 access, while the second and fourth are for IPv6:
 #### Bind the float IP address
+1. Log-in to the Rapid Access Cloud dashboard at https://cloud.cybera.ca.
 
-* * *
+2. In the left-hand panel under “Compute”, click “Instances”.
 
-## RESEARCH PLANNING
-### RESEARCH STEPS
-    1. Prepare for the database, describe the structure and link between each tables.
-    2. Design for the question that how to ask and how to present.
-    3. Strategy to present the different step questions.
-    4. Explain to sina and make  comments.
-    5. Make interface and database as a demo, then talk to Doctors
-    6. Design screen and UI 
-    7. Build the web page
-### TIMELINE
-    1 - 2 weeks: Database (including design and communicate with doctor and Sina)
-    3 - 5 weeks: Collection Interactive Panel ( communicate with doctor)
-    6th week: Log-in System and recording user
-    7th week: Test
-    8th week: Transfer Data & Presentation
+3. Click the Action drop-down button on the right-hand side and select “Associate Floating IP”.
+
+4. Click on the “+” sign next to “Select an IP address”.
+
+5. There is only one pool of addresses available (nova) and the quota shows only one IP address from that pool, so simply click “Allocate IP”.
+
+6. After the IP address has been allocated, click the “Associate” button the the right hand side. Under the Instances summary, your Instance should now have three IP addresses, including a publicly accessible IPv4 address.
+
 
 ## Medical Knowledge Base
 The objective is to crowdsource the data-collection around diseases and their symptoms underlying LiveBook.
