@@ -1,13 +1,9 @@
 # Project : Data Collection System for Livebook 🚀
 
-> Created  2018/1/24, 452 Athabasca Hall,U of Alberta, Edmonton, Alberta 🇨🇦
-
-## About this Readme.md
-This file contains instruction of this project and development logs.
+> Created  2018/1/24, 452 Athabasca Hall,U of Alberta, Edm
 <!-- TOC -->
 
 - [Project : Data Collection System for Livebook 🚀](#project--data-collection-system-for-livebook-🚀)
-    - [About this Readme.md](#about-this-readmemd)
     - [Deployment](#deployment)
         - [1. Install python (3.6) and pip3](#1-install-python-36-and-pip3)
             - [Ubuntu](#ubuntu)
@@ -21,16 +17,16 @@ This file contains instruction of this project and development logs.
             - [TIMELINE](#timeline)
         - [Webpage structure](#webpage-structure)
         - [Deploy on Cybera](#deploy-on-cybera)
-            - [log in instance by shh key](#log-in-instance-by-shh-key)
-            - [Create Security group](#create-security-group)
-            - [Bind the float IP address](#bind-the-float-ip-address)
+            - [1. log in instance by shh key](#1-log-in-instance-by-shh-key)
+            - [2. Create Security group](#2-create-security-group)
+            - [3. Bind the float IP address](#3-bind-the-float-ip-address)
     - [Medical Knowledge Base](#medical-knowledge-base)
     - [Database Table Design](#database-table-design)
     - [UMLS Database](#umls-database)
         - [Using UMLS-API](#using-umls-api)
-            - [1 Generate TGT ( valid 8 hours)](#1-generate-tgt--valid-8-hours)
-            - [2 Generate ST  ( valid 5 mins but single use)](#2-generate-st---valid-5-mins-but-single-use)
-            - [3 API call](#3-api-call)
+            - [1. Generate TGT ( valid 8 hours)](#1-generate-tgt--valid-8-hours)
+            - [2. Generate ST  ( valid 5 mins but single use)](#2-generate-st---valid-5-mins-but-single-use)
+            - [3. API call](#3-api-call)
     - [DevLog](#devlog)
 
 <!-- /TOC -->
@@ -118,7 +114,7 @@ Click the [video](https://drive.google.com/file/d/1HOHV6S964LC5v_y6paMQbNyBboI6o
 and know more.
 
 ### Deploy on Cybera
-#### log in instance by shh key
+#### 1. log in instance by shh key
 Before instances can be created, users will require a key pair that will be injected into the instance to permit access; any instance launched from an image in the Rapid Access Cloud **must** use key pairs to access the virtual machine for the first time, as password sign-on is disabled by default, key pairs being much more secure than a default password, though it does introduce extra steps. However, once a key pair is created, it can be used for any future instances that are created; further additional key pairs can be generated for different instances if there is a need to restrict access to various systems among different users.
 
 Key Pairs are how you login to your instance after it is launched.
@@ -138,7 +134,7 @@ sudo ssh -i cloud.key <username>@<instance_ip>
 ```
 Detail in [Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+Using+the+Cybera+Rapid+Access+Cloud)
 
-#### Create Security group
+#### 2. Create Security group
 1. Log-in to the Rapid Access Cloud dashboard at https://cloud.cybera.ca.
 
 2. In the left-hand panel under “Compute”, click “Access & Security”.
@@ -150,7 +146,7 @@ Detail in [Document](https://wiki.cybera.ca/display/RAC/Part+1+-+Basic+Guide%3A+
     b.  permit ssh from any IPv4 or IPv6 address
 
 4. Click “+Add Rule” in the top right. We are going to be adding four rules. For each rule input the values, then click the blue “Add” button. Note, the first and third rules are for IPv4 access, while the second and fourth are for IPv6:
-#### Bind the float IP address
+#### 3. Bind the float IP address
 1. Log-in to the Rapid Access Cloud dashboard at https://cloud.cybera.ca.
 
 2. In the left-hand panel under “Compute”, click “Instances”.
@@ -203,7 +199,7 @@ Here is the link of [Loading UMLS into MYSQL](http://groups.csail.mit.edu/medg/p
 
 3 steps to auth
 
-#### 1 Generate TGT ( valid 8 hours)
+#### 1. Generate TGT ( valid 8 hours)
     
     https://utslogin.nlm.nih.gov/cas/v1/api-key
     Body:
@@ -216,7 +212,7 @@ Here is the link of [Loading UMLS into MYSQL](http://groups.csail.mit.edu/medg/p
     Location: https://utslogin.nlm.nih.gov/cas/v1/api-key/TGT-58510-CJztXeHbYL4U4LcURLx4KJoFFRgigPN7tLEkH7vse1imydsvdM-cas
     Content-Type: text/html;charset=UTF-8
 
-#### 2 Generate ST  ( valid 5 mins but single use)
+#### 2. Generate ST  ( valid 5 mins but single use)
 
     https://utslogin.nlm.nih.gov/cas/v1/tickets/<TGT-....>
     Body:
@@ -227,7 +223,7 @@ Here is the link of [Loading UMLS into MYSQL](http://groups.csail.mit.edu/medg/p
     
     HTTP/1.1 200 OK
    
-#### 3 API call                     
+#### 3. API call                     
 example
     
     Get:
