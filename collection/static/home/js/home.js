@@ -123,6 +123,7 @@ function next_question(){
     }
     data["type"] = type;
     data["uuid"] = session.uuid;
+    data["topic"] = session.topic;
     data["question_id"] = $(".question-head")[0].id.split("_")[1];
     console.log(data);
     data = JSON.stringify(data);
@@ -209,7 +210,9 @@ function start(){
 		layer.msg("Please choose a topic.")
 		return
 	}
-    var new_url = API_PATH + 'quiz/disease/'+ session.uuid +'/';
+	var topic = session.topic;
+	console.log("Topic");
+    var new_url = API_PATH + 'quiz/disease/'+ session.uuid +'/' + topic;
     location.href = new_url;
 }
 

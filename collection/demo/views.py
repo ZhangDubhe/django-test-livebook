@@ -440,8 +440,9 @@ def index(request):
         'para': para
     })
 
-#  QUIZ
-def quiz(request, uuid):
+
+def quiz(request, uuid, topic):
+    #  QUIZ
     start_time = time.time()
     # check uuid
     try:
@@ -455,12 +456,11 @@ def quiz(request, uuid):
 
     para = "You might want to search the term below?"
     user_name = _(user.user_name)
-    topic = request.session.get('topic')
+
     if not topic:
         print("[ Error ]")
         topic = 'Otitis'
     question = queueQuestion(topic)
-    request.session['topic'] = topic
     request.session['question'] = question.id
     type = question.type
     duration = time.time() - start_time
@@ -578,8 +578,9 @@ def uploadAnswer(request):
         selections = data["selections"]
         type = data["type"]
         uuid = data["uuid"]
-        topic = request.session.get('topic')
+        topic = data["topic"]
         questionModelId = request.session.get('question')
+        print(request.session)
         # make a flow
         print("[update question]", topic, str(questionModelId))
         if type == 'symptom':
