@@ -84,3 +84,13 @@ h4 .badge {
 .list-container input, .list-container button{
     font-size: 0.75em;
 }
+#contact-us{
+    width: 300px;
+    font-size: 0.625em;
+    line-height: 1;
+    background-color: rgba(255, 255, 255, 0.81);
+    padding: 1em;
+}
+#contact-us p{
+    margin:0;
+}

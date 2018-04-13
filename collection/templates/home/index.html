@@ -46,14 +46,14 @@
 	<a href="#contact-us" onclick="$('#contact-us').show()" >Contact & copyright</a>
 	<section id="contact-us" style="display: none">
 		<img src="{% static 'images/umls_tree_sm.jpg' %}" alt="umls tree logo" />
-		<span> All original disease and symptom data are provided by <a href="https://www.nlm.nih.gov/research/umls/support.html">The UMLS Terminology Services</a>. </span>
-		COPYRIGHT BY UNIVERSITY OF ALBERTA
+		<p> All original disease and symptom data are provided by <a href="https://www.nlm.nih.gov/research/umls/support.html">The UMLS Terminology Services</a>. </p>
 		<address>
 			<p>COPYRIGHT BY UNIVERSITY OF ALBERTA</p>
 			<p>Written by <a href="mailto:haotian2@ualberta.ca">Haotian Zhang</a>, Visit us at</p>
 			<p>452 Athabasca Hall, U of A </p>
 			<p>Edmonton, AB, T6G 2E8, Canada</p>
 		</address>
+        <p><a onclick="$('#contact-us').hide()">Close it [ X ]</a></p>
 	</section>
 	</article>
 {% endblock %}
