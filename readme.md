@@ -8,9 +8,18 @@ This file contains instruction of this project and development logs.
 
 - [Project : Data Collection System for Livebook 🚀](#project--data-collection-system-for-livebook-🚀)
     - [About this Readme.md](#about-this-readmemd)
+    - [Deployment](#deployment)
+        - [1. Install python (3.6) and pip3](#1-install-python-36-and-pip3)
+            - [Ubuntu](#ubuntu)
+            - [MacOS](#macos)
+        - [2. Install django](#2-install-django)
     - [Demo Instruction](#demo-instruction)
-        - [Aim:](#aim)
+        - [Project Aim:](#project-aim)
         - [Webpage structure](#webpage-structure)
+        - [Deploy on Cybera](#deploy-on-cybera)
+            - [log in instance by shh key](#log-in-instance-by-shh-key)
+            - [Create Security group](#create-security-group)
+            - [Bind the float IP address](#bind-the-float-ip-address)
     - [RESEARCH PLANNING](#research-planning)
         - [RESEARCH STEPS](#research-steps)
         - [TIMELINE](#timeline)
@@ -21,27 +30,30 @@ This file contains instruction of this project and development logs.
             - [1 Generate TGT ( valid 8 hours)](#1-generate-tgt--valid-8-hours)
             - [2 Generate ST  ( valid 5 mins but single use)](#2-generate-st---valid-5-mins-but-single-use)
             - [3 API call](#3-api-call)
-    - [Deploy on Cybera](#deploy-on-cybera)
-        - [log in instance by shh key](#log-in-instance-by-shh-key)
-        - [Create Security group](#create-security-group)
-        - [Bind the float IP address](#bind-the-float-ip-address)
     - [DevLog](#devlog)
 
 <!-- /TOC -->
 ## Deployment
-1. Install python (3.6) and pip3
+Following code are all in the terminal.
+### 1. Install python (3.6) and pip3
+#### Ubuntu
 ```
-#ubuntu
 sudo apt-get update && sudo apt-get install python-pip3
-#MacOS
-
 ```
-2. Install django
+#### MacOS
+Download python3 from [this website](https://www.python.org/downloads/mac-osx/) and install it.
 ```
-pip install django
-pip install requests, lxml, django-table2
+# download and install pip
+curl -O https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py
+```
+### 2. Install django
+```
+pip3 install django
+pip3 install requests  lxml  django-table2
 ```
 3. cd to project dir and build database
+
 4. runserver
 
 
@@ -51,7 +63,6 @@ There are user interface  and admin interface which all powered by Django. Altho
 You must log in the user interface first as you enter this website and there is temporarily no introduction page of this system. 
 
 Every table is established followed this document, so you can find each explanation here.
-
 
 - - -
 ### Project Aim:

@@ -62,6 +62,9 @@ def loadDiseaseGroup(request):
     else:
         result = "request method error"
         status = 500
+        selectTopic = Topic.objects.get(id=selectTopic)
+        selectTopicName = selectTopic.name
+        selectTopicId = selectTopic.id
     return HttpResponse(json.dumps({
         "result": result,
         "topicName": selectTopicName,
